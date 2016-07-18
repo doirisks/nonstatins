@@ -41,6 +41,7 @@
 <hr>
 <form id = 'inputs'>
 <table>
+<?php if ($_GET['from'] != "table") { ?>
     <tr>
         <td class='leftcolumncell'>Sex:</td>
         <td class = 'sexchoicecell'>
@@ -48,6 +49,7 @@
             <input type="radio" name="ismale" value="female">Female
         </td> 
     </tr>
+<?php } ?>
     <tr>
         <td class='leftcolumncell'>Clinical ASCVD:</td>
         <td class = 'clinascvdcell'>
@@ -56,20 +58,24 @@
     </tr>
 </table>
 <table>
+<?php if ($_GET['from'] != "table") { ?>
         <td class='leftcolumncell'>Age:</td>
         <td class = 'numer_input_cell'><input type = 'float' style="width:45px;text-align:center" name = 'age' /> </td>
         <td class = 'validationcell'><span id = 'age_validation'></span></td>
     </tr>
+<?php } ?>
     <tr>
         <td class='leftcolumncell'>LDL-C:</td>
         <td class = 'numer_input_cell'><input type = 'float' style="width:45px;text-align:center" name = 'LDLC' /> </td>
         <td class = 'validationcell'><span id = 'LDLC_validation'></span></td>
     </tr>
+<?php if ($_GET['from'] != "table") { ?>
     <tr>
         <td class='leftcolumncell'>Systolic BP:</td>
         <td class = 'numer_input_cell'><input type = 'float' style="width:45px;text-align:center" name = 'sysBP' /></td>
         <td class = 'validationcell'><span id = 'sysBP_validation'></span></td>
     </tr>
+<?php } ?>
 </table>
 <table id = 'rflist' name = 'rflist'>
 </table>
@@ -114,6 +120,7 @@
 
 // preliminary settings
 var form = document.getElementById('inputs');
+
 form.age.value = 60;
 form.LDLC.value = 170;
 form.sysBP.value = 120;
@@ -127,6 +134,26 @@ form.percentLDLCreduction.value = 20;
 // default values
 var formData = {'ismale' : 0, 'clinASCVD': 0, 'metabSyndrome': 0,'diabetic': 0,'antihyp': 0,'coronHeartDis': 0,'CVC': 0,'arterDisease': 0,'histStroke': 0,'ACShist': 0,'CKD': 0};
 
+/**
+ * php: paper-based or table-based form data arrays
+ *
+ * the server chooses between two sets of values here
+ */
+<?php if ($_GET['from'] == "table") { ?>    
+// some keys for the data hashtable passed to the calculation
+var formDataKeys = ['clinASCVD', 'diabetic','recentACS','uncontrolled_ASCVD','fam_hypercholesterolemia']; // keys that should start at value of zero
+var riskfactorKeys = [];
+// keys used in the drop-down selector
+var selectorKeys = ['notadding', 'diabetic','recentACS','uncontrolled_ASCVD','fam_hypercholesterolemia']; // useable keys
+// hashtable with readable names for drop-down selector
+var selectorNames = {
+    'notadding':'---',
+    'diabetic':'Diabetes',
+    'recentACS' : 'Recent ACS',
+    'uncontrolled_ASCVD': 'Poorly Controlled ASCVD Risk Factors',
+    'fam_hypercholesterolemia': 'Familial Hypercholesterolemia'
+}; // maps useable to readable keys
+<?php } else { ?>    
 // all keys for the data hashtable passed to the calculation
 var formDataKeys = ['ismale','clinASCVD', 'metabSyndrome','diabetic','antihyp','coronHeartDis','CVC', 'arterDisease','histStroke','ACShist','CKD']; // keys that should start at value of zero
 var riskfactorKeys = [];
@@ -134,6 +161,7 @@ var riskfactorKeys = [];
 var selectorKeys = ['notadding','metabSyndrome','diabetic','coronHeartDis','CVC', 'arterDisease','ACShist','CKD','histStroke1','histStroke2','antihyp<4','antihyp4+']; // useable keys
 // hashtable with readable names for drop-down selector
 var selectorNames = {'notadding':'---','diabetic':'Diabetes','antihyp<4':'Antihypertensives (up to 4)','antihyp4+':'Antihypertensives (4 or more)','coronHeartDis':'Coronary Heart Disease','CVC':'CVC', 'arterDisease':'Arterial Disease','CKD':'Chronic Kidney Disease','ACShist':'History of Acute Coronary Syndrome','histStroke1':'History of Transient Ischemic Attack','histStroke2':'History of Stroke', 'metabSyndrome':'Metabolic Syndrome'}; // maps useable to readable keys
+<?php } ?>
 
 // making the selector
 var selector_beg = "<tbody><tr><td class='leftcolumncell'>Add Risk Factor:</td><td class = 'riskfactorcell'><select name = 'rf_selector'>";
@@ -199,6 +227,7 @@ function removeRiskFactor(useable_key) {
         makeRFlist();
         makeSelector();
     }
+<?php if ($_GET['from'] != "table") { ?>    
     if (useable_key == 'antihyp<4' || useable_key == 'antihyp4+') {
         formData['antihyp'] = 0;
     } else if (useable_key == 'histStroke1' || useable_key == 'histStroke2') { 
@@ -210,7 +239,10 @@ function removeRiskFactor(useable_key) {
         }
     } else {
        formData[useable_key] = 0;
-   }
+    }
+<?php } else { ?>
+    formData[useable_key] = 0;
+<?php } ?>
 }
 
 // function for when the form is submitted
@@ -221,6 +253,7 @@ function onformsubmission() {
         if (form['rf_selector'].options[selectorKeys[key]].selected){
             useable = selectorKeys[key];
             if (useable == 'notadding') {           // does nothing if the form is not being used
+<?php if ($_GET['from'] != "table") { ?>   
             } else if (useable == 'histStroke1') {  // handles interchangeable kinds of history
                 formData['histStroke'] = 1;
                 addRiskFactor('histStroke1');
@@ -235,6 +268,12 @@ function onformsubmission() {
                 removeRiskFactor('antihyp<4');
                 formData['antihyp'] = 4;
                 addRiskFactor('antihyp4+');
+<?php } else { ?>
+            } else if (useable == 'uncontrolled_ASCVD') {    // riskfactors implying ASCVD
+                formData['uncontrolled_ASCVD'] = 1;
+                form.clinASCVD.checked = true;
+                addRiskFactor('uncontrolled_ASCVD');
+<?php } ?>
             } else {                                // usually just sets the formData value to 1 and adds the risk value
                 formData[selectorKeys[key]] = 1;
                 addRiskFactor(selectorKeys[key]);
@@ -246,9 +285,11 @@ function onformsubmission() {
     form['rf_selector'].options['notadding'].selected = true;
     
     // validate/reset other form data
+<?php if ($_GET['from'] != "table") { ?>   
     // sex
     if (form.ismale[0].checked) formData['ismale'] = 1 ;
     else formData['ismale'] = 0;
+<?php } ?>
     // Clinical ASCVD
     if (form.clinASCVD.checked) formData['clinASCVD'] = 1;
     else formData['clinASCVD'] = 0;
@@ -262,6 +303,7 @@ function onformsubmission() {
             document.getElementById('percent_validation').innerHTML = '';
         }, 3000);
     }
+<?php if ($_GET['from'] != "table") { ?>   
     // age
     if (30 <= form['age'].value && form['age'].value <= 120) { 
         formData['age'] = form['age'].value;
@@ -272,6 +314,7 @@ function onformsubmission() {
             document.getElementById('age_validation').innerHTML = '';
         }, 3000);
     }
+<?php } ?>
     // LDLC
     if (160 <= form['LDLC'].value && form['LDLC'].value <= 400) {
         formData['LDLC'] = form['LDLC'].value;
@@ -282,7 +325,8 @@ function onformsubmission() {
             document.getElementById('LDLC_validation').innerHTML = '';
         }, 3000);
     }
-    // sysBP
+    // sysBP here (if not using table)
+<?php if ($_GET['from'] != "table") { ?>    
     if (100 <= form['sysBP'].value && form['sysBP'].value <= 200) { 
         formData['sysBP'] = form['sysBP'].value;
     } else {
@@ -292,6 +336,7 @@ function onformsubmission() {
             document.getElementById('sysBP_validation').innerHTML = '';
         }, 3000);
     }
+<?php } ?>
     
     // calculate
     output = getOutput(formData);
