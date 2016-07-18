@@ -120,10 +120,11 @@
 
 // preliminary settings
 var form = document.getElementById('inputs');
-
+<?php if ($_GET['from'] != "table") { ?>
 form.age.value = 60;
-form.LDLC.value = 170;
 form.sysBP.value = 120;
+<?php } ?>
+form.LDLC.value = 170;
 form.percentLDLCreduction.value = 20;
 //form.clinASCVD.checked = true;
 //form.ismale[0].checked
@@ -139,28 +140,36 @@ var formData = {'ismale' : 0, 'clinASCVD': 0, 'metabSyndrome': 0,'diabetic': 0,'
  *
  * the server chooses between two sets of values here
  */
-<?php if ($_GET['from'] == "table") { ?>    
-// some keys for the data hashtable passed to the calculation
-var formDataKeys = ['clinASCVD', 'diabetic','recentACS','uncontrolled_ASCVD','fam_hypercholesterolemia']; // keys that should start at value of zero
-var riskfactorKeys = [];
-// keys used in the drop-down selector
-var selectorKeys = ['notadding', 'diabetic','recentACS','uncontrolled_ASCVD','fam_hypercholesterolemia']; // useable keys
-// hashtable with readable names for drop-down selector
-var selectorNames = {
-    'notadding':'---',
-    'diabetic':'Diabetes',
-    'recentACS' : 'Recent ACS',
-    'uncontrolled_ASCVD': 'Poorly Controlled ASCVD Risk Factors',
-    'fam_hypercholesterolemia': 'Familial Hypercholesterolemia'
-}; // maps useable to readable keys
-<?php } else { ?>    
+<?php if ($_GET['from'] != "table") { ?>   
 // all keys for the data hashtable passed to the calculation
 var formDataKeys = ['ismale','clinASCVD', 'metabSyndrome','diabetic','antihyp','coronHeartDis','CVC', 'arterDisease','histStroke','ACShist','CKD']; // keys that should start at value of zero
 var riskfactorKeys = [];
 // keys used in the drop-down selector
 var selectorKeys = ['notadding','metabSyndrome','diabetic','coronHeartDis','CVC', 'arterDisease','ACShist','CKD','histStroke1','histStroke2','antihyp<4','antihyp4+']; // useable keys
 // hashtable with readable names for drop-down selector
-var selectorNames = {'notadding':'---','diabetic':'Diabetes','antihyp<4':'Antihypertensives (up to 4)','antihyp4+':'Antihypertensives (4 or more)','coronHeartDis':'Coronary Heart Disease','CVC':'CVC', 'arterDisease':'Arterial Disease','CKD':'Chronic Kidney Disease','ACShist':'History of Acute Coronary Syndrome','histStroke1':'History of Transient Ischemic Attack','histStroke2':'History of Stroke', 'metabSyndrome':'Metabolic Syndrome'}; // maps useable to readable keys
+var selectorNames = {'notadding':'---','diabetic':'Diabetes','antihyp<4':'Antihypertensives (up to 4)','antihyp4+':'Antihypertensives (4 or more)','coronHeartDis':'Coronary Heart Disease','CVC':'CVC', 'arterDisease':'Arterial Disease','CKD':'Chronic Kidney Disease','ACShist':'History of Acute Coronary Syndrome','histStroke1':'History of Transient Ischemic Attack','histStroke2':'History of Stroke', 'metabSyndrome':'Metabolic Syndrome'}; // maps useable to readable keys 
+<?php } else { ?>    
+// some keys for the data hashtable passed to the calculation
+var formDataKeys = ['clinASCVD', 'diabetic','recentACS','uncontrolled_ASCVD','fam_hypercholesterolemia']; // keys that should start at value of zero
+var riskfactorKeys = [];
+// keys used in the drop-down selector
+var selectorKeys = [
+    'notadding', 
+    'diabetic',
+    'recentACS',
+    'uncontrolled_ASCVD',
+    'fam_hypercholesterolemia',
+    'CKD'
+]; // useable keys
+// hashtable with readable names for drop-down selector
+var selectorNames = {
+    'notadding':'---',
+    'diabetic':'Diabetes',
+    'recentACS' : 'Recent ACS',
+    'uncontrolled_ASCVD': 'Poorly Controlled ASCVD Risk Factors',
+    'fam_hypercholesterolemia': 'Familial Hypercholesterolemia',
+    'CKD' : 'Chronic Kidney Disease'
+}; // maps useable to readable keys
 <?php } ?>
 
 // making the selector
@@ -291,8 +300,19 @@ function onformsubmission() {
     else formData['ismale'] = 0;
 <?php } ?>
     // Clinical ASCVD
-    if (form.clinASCVD.checked) formData['clinASCVD'] = 1;
-    else formData['clinASCVD'] = 0;
+    if (form.clinASCVD.checked) {
+        formData['clinASCVD'] = 1;
+    }
+    else {
+        formData['clinASCVD'] = 0;
+<?php if ($_GET['from'] == "table") { ?>   
+        // Remove 'uncontrolled_ASCVD' if ASCVD is removed
+        if (formData['uncontrolled_ASCVD'] == 1) {
+            removeRiskFactor('uncontrolled_ASCVD');
+            formData['uncontrolled_ASCVD'] == 0;
+        }
+<?php } ?>
+    }
     // percent LDL-C reduction
     if (0.0 <= form['percentLDLCreduction'].value && form['percentLDLCreduction'].value <= 100.0) {
         formData['percentLDLCreduction'] = form['percentLDLCreduction'].value / 100.0;
