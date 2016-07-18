@@ -5,7 +5,8 @@
   * contains a function to calculate the NNT for nonstatin treatment based on Pencina et al.'s research
   *
   **/
-  
+    
+    // expects a hash table with all risk factors
     function getOutput(data) {
         var leastrisk = 1.0;
         // finds the least risk and return output calculated from it

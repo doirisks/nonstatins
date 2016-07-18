@@ -66,7 +66,7 @@
     <input type = 'float' style="width:45px;text-align:center" name = 'percentLDLCreduction' />
     <p style="color:FF0000"><span id = 'percent_validation'></span></p>
 </span>
-</form>
+</form> 
 <hr>
 <div> 
 <p>Risk: <span id = "risk" ></span></p>
@@ -93,10 +93,12 @@ form.percentLDLCreduction.value = 20;
 // default values
 var formData = {'ismale' : 0, 'clinASCVD': 0, 'metabSyndrome': 0,'diabetic': 0,'antihyp': 0,'coronHeartDis': 0,'CVC': 0,'arterDisease': 0,'histStroke': 0,'ACShist': 0,'CKD': 0};
 
-// arrays of names
+// all keys for the data hashtable passed to the calculation
 var formDataKeys = ['ismale','clinASCVD', 'metabSyndrome','diabetic','antihyp','coronHeartDis','CVC', 'arterDisease','histStroke','ACShist','CKD']; // keys that should start at value of zero
 var riskfactorKeys = [];
+// keys used in the drop-down selector
 var selectorKeys = ['notadding','clinASCVD', 'metabSyndrome','diabetic','coronHeartDis','CVC', 'arterDisease','ACShist','CKD','histStroke1','histStroke2','antihyp<4','antihyp4+']; // useable keys
+// hashtable with readable names for drop-down selector
 var selectorNames = {'notadding':'---','clinASCVD':'Clinical ASCVD','diabetic':'Diabetes','antihyp<4':'Antihypertensives (up to 4)','antihyp4+':'Antihypertensives (4 or more)','coronHeartDis':'Coronary Heart Disease','CVC':'CVC', 'arterDisease':'Arterial Disease','CKD':'Chronic Kidney Disease','ACShist':'History of Acute Coronary Syndrome','histStroke1':'History of Transient Ischemic Attack','histStroke2':'History of Stroke', 'metabSyndrome':'Metabolic Syndrome'}; // maps useable to readable keys
 
 // making the selector
@@ -104,8 +106,8 @@ var selector_beg = "<tbody><tr><td class='leftcolumncell'>Add Risk Factor:</td><
 var selector_end = "</select></td></tr></tbody>";
 function makeSelector() {
     selectorText = selector_beg;
-    for (var key in selectorKeys) {
-        selectorText += "<option name = '" + selectorKeys[key] + "'>" + selectorNames[selectorKeys[key]] + "</option>";
+    for (var i in selectorKeys) {
+        selectorText += "<option name = '" + selectorKeys[i] + "'>" + selectorNames[selectorKeys[i]] + "</option>";
     }
     selectorText += selector_end;
     document.getElementById('selectorlist').innerHTML = selectorText;
@@ -212,7 +214,8 @@ function onformsubmission() {
     // check/validate/reset other form data
     if (form.ismale[0].checked) formData['ismale'] = 1 ;
     else formData['ismale'] = 0;
-    if (0.0 <= form['percentLDLCreduction'].value && form['percentLDLCreduction'].value <= 100.0) {     // percent LDL-C reduction
+    // percent LDL-C reduction
+    if (0.0 <= form['percentLDLCreduction'].value && form['percentLDLCreduction'].value <= 100.0) {
         formData['percentLDLCreduction'] = form['percentLDLCreduction'].value / 100.0;
     } else {
         form.percentLDLCreduction.value = 100*formData['percentLDLCreduction'];
@@ -221,7 +224,8 @@ function onformsubmission() {
             document.getElementById('percent_validation').innerHTML = '';
         }, 3000);
     }
-    if (30 <= form['age'].value && form['age'].value <= 120) {                                          // age
+    // age
+    if (30 <= form['age'].value && form['age'].value <= 120) { 
         formData['age'] = form['age'].value;
     } else {
         form.age.value = formData['age'];
@@ -230,7 +234,8 @@ function onformsubmission() {
             document.getElementById('age_validation').innerHTML = '';
         }, 3000);
     }
-    if (160 <= form['LDLC'].value && form['LDLC'].value <= 400) {                                          // LDLC
+    // LDLC
+    if (160 <= form['LDLC'].value && form['LDLC'].value <= 400) {
         formData['LDLC'] = form['LDLC'].value;
     } else {
         form.LDLC.value = formData['LDLC'];
@@ -239,7 +244,8 @@ function onformsubmission() {
             document.getElementById('LDLC_validation').innerHTML = '';
         }, 3000);
     }
-    if (100 <= form['sysBP'].value && form['sysBP'].value <= 200) {                                          // sysBP
+    // sysBP
+    if (100 <= form['sysBP'].value && form['sysBP'].value <= 200) { 
         formData['sysBP'] = form['sysBP'].value;
     } else {
         form.sysBP.value = formData['sysBP'];
