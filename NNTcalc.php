@@ -276,10 +276,10 @@ function onformsubmission() {
     // gets the keys of output
     var keys = ['NNT','risk','risklevel'];
     for (var i = 0; i < keys.length;i++) {
-        if (i == 1) {
+        if (i == 1) { // display risks
             document.getElementById(keys[i]).innerHTML = "&gt;" + (Math.floor(output[keys[i]]*1000.0)/10.0).toString()+'%';
         }
-        else {
+        else { // display NNT
             document.getElementById(keys[i]).innerHTML = output[keys[i]];
         }
     }
