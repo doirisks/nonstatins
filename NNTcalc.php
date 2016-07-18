@@ -65,7 +65,7 @@
     </tr>
 <?php } ?>
     <tr>
-        <td class='leftcolumncell'>LDL-C:</td>
+        <td class='leftcolumncell'>LDL-C <span style="font-size:13">(mg/dL)</span>:</td>
         <td class = 'numer_input_cell'><input type = 'float' style="width:45px;text-align:center" name = 'LDLC' /> </td>
         <td class = 'validationcell'><span id = 'LDLC_validation'></span></td>
     </tr>
@@ -101,7 +101,7 @@
     </tr>
 </table>
 <p>Risk Level: <span id = "risklevel" ></span></p>
-<p>5 Year NNT: <span id = "NNT" ></span></p>
+<p style="font-size:24">5 Year NNT: <span id = "NNT" ></span></p>
 <hr>
 <p style="color:#990000;font-size:12;padding-left:35px;padding-right:35px">Estimates reflect broad risk categories and may not respond to all value changes.</p>
 </div>
@@ -165,7 +165,7 @@ var selectorKeys = [
 var selectorNames = {
     'notadding':'---',
     'diabetic':'Diabetes',
-    'recentACS' : 'Recent ACS',
+    'recentACS' : 'Recent ACS (&lt;3 months)',
     'uncontrolled_ASCVD': 'Poorly Controlled ASCVD Risk Factors',
     'fam_hypercholesterolemia': 'Familial Hypercholesterolemia',
     'CKD' : 'Chronic Kidney Disease'

@@ -16,7 +16,7 @@
          **/
         // ASCVD
         if (data['clinASCVD']){
-            if ((data['diabetic']) || (data['recent_ACS']) || (data['uncontrolled_ASCVD']) || (data['CKD']) || (data['LDLC'] >= 190) || (data['fam_hypercholesterolemia'])) {
+            if ((data['diabetic']) || (data['recentACS']) || (data['uncontrolled_ASCVD']) || (data['CKD']) || (data['LDLC'] >= 190) || (data['fam_hypercholesterolemia'])) {
                 leastrisk = 0.15; // with comorbidities
                 return makeOutputWithRisk(leastrisk, data['LDLC'], data['percentLDLCreduction']);
             } else {
