@@ -86,7 +86,7 @@
 <div> 
 <table >
     <tr>
-        <td class="riskdisplaycell">5Y Risk of ASCVD</td>
+        <td class="riskdisplaycell">5Y Risk of ASCVD (est.)</td>
         <td class="riskdisplaycell">10Y Risk of ASCVD</td>
     </tr>
     <tr>
