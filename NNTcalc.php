@@ -101,7 +101,7 @@
     </tr>
 </table>
 <p>Risk Level: <span id = "risklevel" ></span></p>
-<p style="font-size:24">5 Year NNT: <span id = "NNT" ></span></p>
+<p style="font-size:24">Five Year NNT: <span id = "NNT" ></span></p>
 <hr>
 <p style="color:#990000;font-size:12;padding-left:35px;padding-right:35px">Estimates reflect broad risk categories and may not respond to all value changes.</p>
 </div>
