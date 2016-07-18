@@ -28,6 +28,10 @@
     color:#FF0000;
     font-size:12
 }
+.riskdisplaycell {
+    text-align:center;
+    width:190px;
+}
 </style>
 
 <! title>
@@ -80,13 +84,32 @@
 </form> 
 <hr>
 <div> 
-<p>Risk: <span id = "risk" ></span></p>
+<table >
+    <tr>
+        <td class="riskdisplaycell">5Y Risk of ASCVD</td>
+        <td class="riskdisplaycell">10Y Risk of ASCVD</td>
+    </tr>
+    <tr>
+        <td class="riskdisplaycell"><span id = "risk" ></span></p>
+        <td class="riskdisplaycell"><span id = "risk2" ></span></p>
+    </tr>
+</table>
 <p>Risk Level: <span id = "risklevel" ></span></p>
-<p>NNT: <span id = "NNT" ></span></p>
+<p>5 Year NNT: <span id = "NNT" ></span></p>
 <hr>
 <p style="color:#990000;font-size:12;padding-left:35px;padding-right:35px">Estimates reflect broad risk categories and may not respond to all value changes.</p>
 </div>
-<script type="text/javascript" src="calculate.js"></script>
+<?php
+    if ($_GET['from'] == "paper") {
+        ?><script type="text/javascript" src="calculate.js"></script><?php
+    }
+    else if ($_GET['from'] == "table") {
+        ?><script type="text/javascript" src="calculate_from_table.js"></script><?php
+    }
+    else {
+        ?><script type="text/javascript" src="calculate.js"></script><?php
+    }
+?>
 <script type="text/javascript">
 
 // preliminary settings
@@ -277,7 +300,8 @@ function onformsubmission() {
     var keys = ['NNT','risk','risklevel'];
     for (var i = 0; i < keys.length;i++) {
         if (i == 1) { // display risks
-            document.getElementById(keys[i]).innerHTML = "&gt;" + (Math.floor(output[keys[i]]*1000.0)/10.0).toString()+'%';
+            document.getElementById(keys[i]).innerHTML = "&ge; " + (Math.floor(output[keys[i]]*1000.0)/10.0).toString()+'%';
+            document.getElementById(keys[i] + "2").innerHTML = "&ge; " + (Math.floor(2 * output[keys[i]]*1000.0)/10.0).toString()+'%';
         }
         else { // display NNT
             document.getElementById(keys[i]).innerHTML = output[keys[i]];
