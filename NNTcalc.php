@@ -13,6 +13,11 @@
     text-align:right;
     width:145px
 }
+.clinascvdcell {
+    text-align:center;
+    width:120px;
+    padding-left:30px
+}
 .riskfactorcell {
     text-align:center;
     width:250px
@@ -37,6 +42,12 @@
         <td class = 'sexchoicecell'>
             <input type="radio" name="ismale" value="male" checked>Male
             <input type="radio" name="ismale" value="female">Female
+        </td> 
+    </tr>
+    <tr>
+        <td class='leftcolumncell'>Clinical ASCVD:</td>
+        <td class = 'clinascvdcell'>
+            <input type="checkbox" name="clinASCVD" checked>
         </td> 
     </tr>
 </table>
@@ -97,9 +108,9 @@ var formData = {'ismale' : 0, 'clinASCVD': 0, 'metabSyndrome': 0,'diabetic': 0,'
 var formDataKeys = ['ismale','clinASCVD', 'metabSyndrome','diabetic','antihyp','coronHeartDis','CVC', 'arterDisease','histStroke','ACShist','CKD']; // keys that should start at value of zero
 var riskfactorKeys = [];
 // keys used in the drop-down selector
-var selectorKeys = ['notadding','clinASCVD', 'metabSyndrome','diabetic','coronHeartDis','CVC', 'arterDisease','ACShist','CKD','histStroke1','histStroke2','antihyp<4','antihyp4+']; // useable keys
+var selectorKeys = ['notadding','metabSyndrome','diabetic','coronHeartDis','CVC', 'arterDisease','ACShist','CKD','histStroke1','histStroke2','antihyp<4','antihyp4+']; // useable keys
 // hashtable with readable names for drop-down selector
-var selectorNames = {'notadding':'---','clinASCVD':'Clinical ASCVD','diabetic':'Diabetes','antihyp<4':'Antihypertensives (up to 4)','antihyp4+':'Antihypertensives (4 or more)','coronHeartDis':'Coronary Heart Disease','CVC':'CVC', 'arterDisease':'Arterial Disease','CKD':'Chronic Kidney Disease','ACShist':'History of Acute Coronary Syndrome','histStroke1':'History of Transient Ischemic Attack','histStroke2':'History of Stroke', 'metabSyndrome':'Metabolic Syndrome'}; // maps useable to readable keys
+var selectorNames = {'notadding':'---','diabetic':'Diabetes','antihyp<4':'Antihypertensives (up to 4)','antihyp4+':'Antihypertensives (4 or more)','coronHeartDis':'Coronary Heart Disease','CVC':'CVC', 'arterDisease':'Arterial Disease','CKD':'Chronic Kidney Disease','ACShist':'History of Acute Coronary Syndrome','histStroke1':'History of Transient Ischemic Attack','histStroke2':'History of Stroke', 'metabSyndrome':'Metabolic Syndrome'}; // maps useable to readable keys
 
 // making the selector
 var selector_beg = "<tbody><tr><td class='leftcolumncell'>Add Risk Factor:</td><td class = 'riskfactorcell'><select name = 'rf_selector'>";
@@ -211,9 +222,13 @@ function onformsubmission() {
     // reset the selector
     form['rf_selector'].options['notadding'].selected = true;
     
-    // check/validate/reset other form data
+    // validate/reset other form data
+    // sex
     if (form.ismale[0].checked) formData['ismale'] = 1 ;
     else formData['ismale'] = 0;
+    // Clinical ASCVD
+    if (form.clinASCVD.checked) formData['clinASCVD'] = 1;
+    else formData['clinASCVD'] = 0;
     // percent LDL-C reduction
     if (0.0 <= form['percentLDLCreduction'].value && form['percentLDLCreduction'].value <= 100.0) {
         formData['percentLDLCreduction'] = form['percentLDLCreduction'].value / 100.0;
