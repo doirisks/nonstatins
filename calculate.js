@@ -25,6 +25,9 @@
         } else if ((data['arterDisease'] && data['CVC']) || (data['coronHeartDis'])) {
             leastrisk = 0.15;
             return makeOutputWithRisk(leastrisk, data['LDLC'], data['percentLDLCreduction']);
+        } else if ( (data['clinASCVD']) && (data['fam_hypercholesterolemia']) ) {
+            leastrisk = 0.15;
+            return makeOutputWithRisk(leastrisk, data['LDLC'], data['percentLDLCreduction']);
         } else if (data['clinASCVD'] && data['smoker']) {
             leastrisk = 0.14;
             return makeOutputWithRisk(leastrisk, data['LDLC'], data['percentLDLCreduction']);
@@ -36,6 +39,9 @@
             return makeOutputWithRisk(leastrisk, data['LDLC'], data['percentLDLCreduction']);
         } else if ( data['clinASCVD'] && !(data['CKD']) ) {
             leastrisk = 0.11;
+            return makeOutputWithRisk(leastrisk, data['LDLC'], data['percentLDLCreduction']);
+        } else if ( data['fam_hypercholesterolemia'] ) {
+            leastrisk = 0.10;
             return makeOutputWithRisk(leastrisk, data['LDLC'], data['percentLDLCreduction']);
         /** none of the lines would ever be used because they would all rely on ASCVD, and ASCVD is accounted for
         } else if (!(data['ismale']) && data['histStroke']) {
