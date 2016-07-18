@@ -1,6 +1,7 @@
 <div style="width:380px;text-align:center;border-style:double;padding-bottom:0px">
 <style>
 .leftcolumncell {
+    font-size:15;
     text-align:right;
     padding-right:10px;
     width:115px
