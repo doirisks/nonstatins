@@ -33,8 +33,8 @@
     }
         
     function makeOutputWithRisk(riskval, LDLC, percentLDLCreduction) {   
-        var NNT = 1.0 /(riskval*0.21*LDLC/39.0*percentLDLCreduction) ;
-        NNT = Math.round(NNT+0.5);
+        var NNT = 1.0 /(riskval*0.21*LDLC/38.61*percentLDLCreduction) ;
+        NNT = Math.round(NNT);
         var risklevel = "MODERATE";
         if(riskval >= 0.1 ) risklevel = "HIGH";
         if(riskval >= 0.15) risklevel = "VERY HIGH";
