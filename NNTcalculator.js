@@ -257,8 +257,8 @@ function NNTcalculator(div_id) {
   this.title.push(this.makeElem("hr")); // separator
   this.title[0].setAttribute("style","font-size:30");
   this.title[0].appendChild(document.createTextNode("NNT Estimator"));
-  this.title[1].setAttribute("style","font-size:16");
-  this.title[1].appendChild(document.createTextNode("Number Needed to Treat for LDL-C reducers"));
+  this.title[1].setAttribute("style","font-size:16;text-align:center;padding-left:40px;padding-right:40px");
+  this.title[1].appendChild(document.createTextNode("Number Needed to Treat for LDL-C reducers while on maximal statin therapy"));
   for (var i in this.title) {
     this.d.appendChild(this.title[i]);
   }
