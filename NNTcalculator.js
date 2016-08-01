@@ -15,6 +15,49 @@ function NNTcalculator(div_id) {
   
   // "global" variables
   this.inputs = [];  // inputs to check 
+  this.formData = {'ismale' : 0, 'clinASCVD': 0, 'metabSyndrome': 0,'diabetic': 0,'antihyp': 0,'coronHeartDis': 0,'CVC': 0,'arterDisease': 0,'histStroke': 0,'ACShist': 0,'CKD': 0};
+  this.formDataKeys = ['clinASCVD', 'diabetic','recentACS','uncontrolled_ASCVD','fam_hypercholesterolemia']; // keys that should start at value of zero
+  this.riskfactorKeys = [];
+  this.selectorKeys = [
+      'notadding', 
+      'diabetic',
+      'recentACS',
+      'uncontrolled_ASCVD',
+      'fam_hypercholesterolemia',
+      'CKD'
+  ]; // useable keys
+  this.selectorNames = {
+      'notadding':'---',
+      'diabetic':'Diabetes',
+      'recentACS' : 'Recent ACS (<3 months)',
+      'uncontrolled_ASCVD': 'Poorly Controlled ASCVD Risk Factors',
+      'fam_hypercholesterolemia': 'Familial Hypercholesterolemia',
+      'CKD' : 'Chronic Kidney Disease'
+  }; // maps useable to readable keys
+  
+  // function makeSelector: makes the risk factor selector
+  this.makeSelector = function(master, table) {
+    var selector = master.makeElem("select");
+    for (i in master.selectorKeys) {
+      var opt = master.makeElem("option");
+      opt.setAttribute("name",master.selectorKeys[i]);
+      opt.appendChild(document.createTextNode(master.selectorNames[master.selectorKeys[i]]));
+      selector.appendChild(opt);
+    }
+    
+    var label = master.makeElem("td");
+    label.setAttribute("style","font-size:15;text-align:right;padding-right:10px;width:115px");
+    label.appendChild(document.createTextNode("Add Risk Factor:"));
+    var selector_cell = master.makeElem("td");
+    selector_cell.setAttribute("style", "text-align:center;width:250px");
+    selector_cell.appendChild(selector);
+    var tr = master.makeElem("tr");
+    tr.appendChild(label);
+    tr.appendChild(selector_cell);
+    //var tbody = master.makeElem("tbody");
+    //tbody.appendChild(tr);
+    table.appendChild(tr);//body);
+  } 
   
   // function makeElem: returns document.createElement(), but adds class NNTcalculator to the tag name
   this.makeElem = function (tagname) {
@@ -65,17 +108,17 @@ function NNTcalculator(div_id) {
       cell.setAttribute("style", "text-align:right;width:110px");
       cell.appendChild(input);
       tr.appendChild(cell);
-      var validation = master.makeElem("td");
-      validation.setAttribute("style","text-align:center;width:120px;color:#FF0000;font-size:12");
-      var validation_text = master.makeElem("span");
-      validation.appendChild(validation_text);
-      tr.appendChild(validation);
+      var validation_cell = master.makeElem("td");
+      validation_cell.setAttribute("style","text-align:center;width:120px;color:#FF0000;font-size:12");
+      var validation = master.makeElem("span");
+      validation_cell.appendChild(validation);
+      tr.appendChild(validation_cell);
     } else {
       console.log("bad input type!");
       return ;
     }
     
-    master.inputs.push(input);
+    master.inputs.push([inpname, input, validation]);
     table.appendChild(tr);
   }
   
@@ -147,10 +190,11 @@ function NNTcalculator(div_id) {
     this.d.appendChild(this.t[i]);
   }
   
-  // buidl "risk factors"
+  // build "risk factors"
   this.rf = [];
   this.rf.push(this.makeElem("table"));
   this.rf.push(this.makeElem("table"));
+  this.makeSelector(this, this.rf[1]);
   this.rf.push(this.makeElem("hr"));
   for (i in this.rf) {
     this.d.appendChild(this.rf[i]);
@@ -172,7 +216,7 @@ function NNTcalculator(div_id) {
   for (i in this.ldl) {
     this.d.appendChild(this.ldl[i]);
   }
-  this.inputs.push(this.ldl[1]);
+  this.inputs.push(["percentLDLCreduction", this.ldl[1], this.ldl[2]);
   
   
   // build "results"
@@ -188,4 +232,22 @@ function NNTcalculator(div_id) {
   for (i in this.disclaimer) {
     this.d.appendChild(this.disclaimer[i]);
   } 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 }
