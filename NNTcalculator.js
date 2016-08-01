@@ -10,54 +10,89 @@
   
   // TODO add support for older IE in dynamic build of Sex input
   // TODO change the 5 and 10 year risk displays to show "greater than or equal to" ( >= ) instead of ">"
+  // TODO make it so that add or removing a risk factor does not require rebuilding the whole lists!
 
 function NNTcalculator(div_id) {
   
   // "global" variables
-  this.inputs = [];  // inputs to check 
+  this.inputs = {};  // inputs to check 
   this.formData = {'ismale' : 0, 'clinASCVD': 0, 'metabSyndrome': 0,'diabetic': 0,'antihyp': 0,'coronHeartDis': 0,'CVC': 0,'arterDisease': 0,'histStroke': 0,'ACShist': 0,'CKD': 0};
   this.formDataKeys = ['clinASCVD', 'diabetic','recentACS','uncontrolled_ASCVD','fam_hypercholesterolemia']; // keys that should start at value of zero
-  this.riskfactorKeys = [];
-  this.selectorKeys = [
+  this.riskfactorKeys = [];       // keys for selected risk factors
+  this.riskfactorTableRows = [];  // risk factor table rows
+  this.selectorKeys = [ // useable keys
       'notadding', 
       'diabetic',
       'recentACS',
       'uncontrolled_ASCVD',
       'fam_hypercholesterolemia',
       'CKD'
-  ]; // useable keys
-  this.selectorNames = {
+  ]; 
+  this.selectorNames = { // maps useable keys to names
       'notadding':'---',
       'diabetic':'Diabetes',
       'recentACS' : 'Recent ACS (<3 months)',
       'uncontrolled_ASCVD': 'Poorly Controlled ASCVD Risk Factors',
       'fam_hypercholesterolemia': 'Familial Hypercholesterolemia',
       'CKD' : 'Chronic Kidney Disease'
-  }; // maps useable to readable keys
+  }; 
   
   // function makeSelector: makes the risk factor selector
-  this.makeSelector = function(master, table) {
-    var selector = master.makeElem("select");
-    for (i in master.selectorKeys) {
-      var opt = master.makeElem("option");
-      opt.setAttribute("name",master.selectorKeys[i]);
-      opt.appendChild(document.createTextNode(master.selectorNames[master.selectorKeys[i]]));
+  this.makeSelector = function(table) {
+    var selector = this.makeElem("select");
+    for (var i in this.selectorKeys) {
+      var opt = this.makeElem("option");
+      opt.setAttribute("name",this.selectorKeys[i]);
+      opt.appendChild(document.createTextNode(this.selectorNames[this.selectorKeys[i]]));
       selector.appendChild(opt);
     }
+    var _this = this;
+    selector.addEventListener("change", function(){_this.onformsubmission()});
     
-    var label = master.makeElem("td");
+    var label = this.makeElem("td");
     label.setAttribute("style","font-size:15;text-align:right;padding-right:10px;width:115px");
     label.appendChild(document.createTextNode("Add Risk Factor:"));
-    var selector_cell = master.makeElem("td");
+    var selector_cell = this.makeElem("td");
     selector_cell.setAttribute("style", "text-align:center;width:250px");
     selector_cell.appendChild(selector);
-    var tr = master.makeElem("tr");
+    var tr = this.makeElem("tr");
     tr.appendChild(label);
     tr.appendChild(selector_cell);
-    //var tbody = master.makeElem("tbody");
-    //tbody.appendChild(tr);
-    table.appendChild(tr);//body);
+    var nodes = table.childNodes;
+    if (nodes.length > 0) {
+      table.childNodes[0].remove();
+    }
+    table.appendChild(tr);
+    return selector;
   } 
+  
+  // function makeRFlist: makes the dynamic list of current risk factors
+  this.makeRFlist = function (table) {
+    table.innerHTML = "";
+    for (var i in this.riskfactorKeys) {
+      // removal button
+      var remove = this.makeElem("input");
+      remove.setAttribute("type", "button");
+      remove.setAttribute("value", "Remove");
+      remove.setAttribute("onclick", this.id+'.rfremovalbuttonclicked("' + this.riskfactorKeys[i] + '")');
+      // removal button's cell
+      var remove_cell = this.makeElem("td");
+      remove_cell.setAttribute("style", "font-size:15;text-align:right;padding-right:10px;width:115px");
+      remove_cell.appendChild(remove);
+      // display risk factor name
+      var display_cell = this.makeElem("td");
+      display_cell.setAttribute("style", "text-align:center;width:250px");
+      var rfname = this.selectorNames[this.riskfactorKeys[i]];
+      display_cell.appendChild(document.createTextNode(rfname));
+      // table row for the cells
+      var tr = this.makeElem("tr");
+      tr.setAttribute("name", this.riskfactorKeys[i]);
+      tr.appendChild(remove_cell);
+      tr.appendChild(display_cell);
+      table.appendChild(tr);
+    }
+  }
+  
   
   // function makeElem: returns document.createElement(), but adds class NNTcalculator to the tag name
   this.makeElem = function (tagname) {
@@ -67,15 +102,15 @@ function NNTcalculator(div_id) {
   }
   
   // function make input: returns an input table row
-  this.makeInput = function(master, table, title, inpname, inptype, lower, upper, defaultval) {
+  this.makeInput = function(table, title, inpname, inptype, lower, upper, defaultval) {
   
-    var tr = master.makeElem("tr");
-    var titlecell = master.makeElem("td");  // title of the input
+    var tr = this.makeElem("tr");
+    var titlecell = this.makeElem("td");  // title of the input
     titlecell.appendChild(document.createTextNode(title + ":"));
     titlecell.setAttribute("style","font-size:15;text-align:right;padding-right:10px;width:115px");
     tr.appendChild(titlecell);
-    var cell = master.makeElem("td");
-    var input = master.makeElem("input")
+    var cell = this.makeElem("td");
+    var input = this.makeElem("input")
     input.setAttribute("type",inptype);
     input.setAttribute("name",inpname);
     // radio inputs (Sex)
@@ -86,7 +121,7 @@ function NNTcalculator(div_id) {
         return ;
       }
       input.setAttribute("checked",true);
-      var input2 = master.makeElem("input");
+      var input2 = this.makeElem("input");
       input2.setAttribute("type",inptype);
       input2.setAttribute("name",inpname);
       cell.setAttribute("style","text-align:right;width:145px");
@@ -108,9 +143,9 @@ function NNTcalculator(div_id) {
       cell.setAttribute("style", "text-align:right;width:110px");
       cell.appendChild(input);
       tr.appendChild(cell);
-      var validation_cell = master.makeElem("td");
+      var validation_cell = this.makeElem("td");
       validation_cell.setAttribute("style","text-align:center;width:120px;color:#FF0000;font-size:12");
-      var validation = master.makeElem("span");
+      var validation = this.makeElem("span");
       validation_cell.appendChild(validation);
       tr.appendChild(validation_cell);
     } else {
@@ -118,19 +153,19 @@ function NNTcalculator(div_id) {
       return ;
     }
     
-    master.inputs.push([inpname, input, validation]);
+    this.inputs[inpname] = [input, validation];
     table.appendChild(tr);
   }
   
   // function to display results as passed by the make calculator function
-  this.showResults = function (master, div, results) {
+  this.showResults = function (div, results) {
     // make elements
-    var table = master.makeElem("table");
-    var titlerow = master.makeElem("tr");
-    var outptrow = master.makeElem("tr");
+    var table = this.makeElem("table");
+    var titlerow = this.makeElem("tr");
+    var outptrow = this.makeElem("tr");
     var cells = [];
-    for (i in [0, 1, 2, 3]){
-      cells.push(master.makeElem("td"));
+    for (var i in [0, 1, 2, 3]){
+      cells.push(this.makeElem("td"));
       cells[i].setAttribute("style", "text-align:center;width:190px;");
     }
     cells[0].appendChild(document.createTextNode("5Y Risk of ASCVD"));
@@ -144,10 +179,10 @@ function NNTcalculator(div_id) {
     outptrow.appendChild(cells[3]);
     table.appendChild(outptrow);
     
-    var risklevel = master.makeElem("p");
+    var risklevel = this.makeElem("p");
     risklevel.appendChild(document.createTextNode("Risk Level: "+ results["risklevel"]));
     
-    var NNT = master.makeElem("p");
+    var NNT = this.makeElem("p");
     NNT.setAttribute("style", "font-size:24");
     NNT.appendChild(document.createTextNode("Five Year NNT: " + results["NNT"].toString()));
     
@@ -156,7 +191,7 @@ function NNTcalculator(div_id) {
     div.appendChild(table);
     div.appendChild(risklevel);
     div.appendChild(NNT);
-    div.appendChild(master.makeElem("hr"));
+    div.appendChild(this.makeElem("hr"));
   }
   
   // building the calculator...
@@ -173,7 +208,7 @@ function NNTcalculator(div_id) {
   this.title[0].appendChild(document.createTextNode("NNT Estimator"));
   this.title[1].setAttribute("style","font-size:16");
   this.title[1].appendChild(document.createTextNode("Number Needed to Treat for LDL-C reducers"));
-  for (i in this.title) {
+  for (var i in this.title) {
     this.d.appendChild(this.title[i]);
   }
   
@@ -181,12 +216,12 @@ function NNTcalculator(div_id) {
   this.t = [];
   this.t.push(this.makeElem("table"));
   this.t.push(this.makeElem("table"));  // repeat is not an accident
-  this.makeInput(this, this.t[0], "Sex", "ismale", "radio", "Female", "Male");
-  this.makeInput(this, this.t[0], "Clinical ASCVD", "clinASCVD", "checkbox");
-  this.makeInput(this, this.t[1], "Age", "age", "float", 30, 120, 60);
-  this.makeInput(this, this.t[1], "LDL-C (mg/dL)", "LDLC", "float", 60, 400, 170);
-  this.makeInput(this, this.t[1], "Systolic BP", "sysBP", "float", 90, 350, 120);
-  for (i in this.t) {
+  this.makeInput(this.t[0], "Sex", "ismale", "radio", "Female", "Male");
+  this.makeInput(this.t[0], "Clinical ASCVD", "clinASCVD", "checkbox");
+  this.makeInput(this.t[1], "Age", "age", "float", 30, 120, 60);
+  this.makeInput(this.t[1], "LDL-C (mg/dL)", "LDLC", "float", 60, 400, 170);
+  //this.makeInput(this.t[1], "Systolic BP", "sysBP", "float", 90, 350, 120);   // SBP may not be necessary
+  for (var i in this.t) {
     this.d.appendChild(this.t[i]);
   }
   
@@ -194,9 +229,9 @@ function NNTcalculator(div_id) {
   this.rf = [];
   this.rf.push(this.makeElem("table"));
   this.rf.push(this.makeElem("table"));
-  this.makeSelector(this, this.rf[1]);
+  this.selector = this.makeSelector(this.rf[1]);
   this.rf.push(this.makeElem("hr"));
-  for (i in this.rf) {
+  for (var i in this.rf) {
     this.d.appendChild(this.rf[i]);
   }
   
@@ -213,15 +248,15 @@ function NNTcalculator(div_id) {
   this.ldl[1].setAttribute("value", 20);
   this.ldl[2].setAttribute("style", "color:FF0000");
   this.ldl.push(this.makeElem("hr"));
-  for (i in this.ldl) {
+  for (var i in this.ldl) {
     this.d.appendChild(this.ldl[i]);
   }
-  this.inputs.push(["percentLDLCreduction", this.ldl[1], this.ldl[2]);
+  this.inputs["percentLDLCreduction"] = [this.ldl[1], this.ldl[2]];
   
   
   // build "results"
   this.r = this.makeElem("div");
-  this.showResults(this, this.r,{'NNT':0,'risk':0,'risklevel':"Unknown"});
+  this.showResults(this.r,{'NNT':0,'risk':0,'risklevel':"Unknown"});
   this.d.appendChild(this.r);
   
   // build disclaimer
@@ -229,7 +264,7 @@ function NNTcalculator(div_id) {
   this.disclaimer.push(this.makeElem("p"));
   this.disclaimer[0].setAttribute("style", "color:#990000;font-size:12;padding-left:35px;padding-right:35px");
   this.disclaimer[0].appendChild(document.createTextNode("Estimates reflect broad risk categories and may not respond to all value changes"));
-  for (i in this.disclaimer) {
+  for (var i in this.disclaimer) {
     this.d.appendChild(this.disclaimer[i]);
   } 
   
@@ -246,8 +281,147 @@ function NNTcalculator(div_id) {
   
   
   
+  // function rfremovalbuttonclicked: the function called when an rf removal button is clicked
+  this.rfremovalbuttonclicked = function (useable_key){
+    this.removeRiskFactor(useable_key);
+    this.onformsubmission();
+  }
+
+  // function addRiskFactor: adds a risk factor to the list shown, remove from the selector list
+  this.addRiskFactor = function (useable_key) {
+    // take option out of selectorKeys
+    for(var i = this.selectorKeys.length -1; i >= 0 ; i--){
+      if(this.selectorKeys[i] == useable_key){
+        this.selectorKeys.splice(i, 1);
+        // put it into riskfactorKeys
+        this.riskfactorKeys.push(useable_key);
+      }
+    }
+    //remake both html elements
+    this.makeRFlist(this.rf[0]);
+    this.selector = this.makeSelector(this.rf[1]);
+  }
+
+  //function to remove a risk factor from the list
+  this.removeRiskFactor = function(useable_key) {
+    if (useable_key == '') {
+      // put option back in
+    } else if (useable_key == '') {
+      // pass?
+    } else {
+      // take option out of riskfactorKeys
+      for(var i = this.riskfactorKeys.length -1; i >= 0 ; i--){
+        if(this.riskfactorKeys[i] == useable_key){
+            this.riskfactorKeys.splice(i, 1);
+            // put the key back into selector keys
+          this.selectorKeys.push(useable_key);
+        }
+      }
+      //remake both html elements
+      this.makeRFlist(this.rf[0]);
+      this.selector = this.makeSelector(this.rf[1]);
+    }
+    this.formData[useable_key] = 0;
+  }
+
+  // onformsubmission runs all necessary actions for when the form is submitted
+  this.onformsubmission = function() {
+  console.log(this);
   
+    // check for new risk factors
+    for (var i in this.selectorKeys) {
+      if (this.selector.options[this.selectorKeys[i]].selected){
+        useable = this.selectorKeys[i];
+        if (useable == 'notadding') {
+          // does nothing if the form is not being used
+        } else if (useable == 'uncontrolled_ASCVD') {    // riskfactors implying ASCVD
+          this.formData['uncontrolled_ASCVD'] = 1;
+          this.inputs["clinASCVD"][0].checked = true;
+          this.addRiskFactor('uncontrolled_ASCVD');
+        } else {                                // usually just sets the formData value to 1 and adds the risk value
+          this.formData[this.selectorKeys[i]] = 1;
+          this.addRiskFactor(this.selectorKeys[i]);
+        }
+      }
+    }
+      
+    // reset the selector
+    this.selector.options['notadding'].selected = true;
+      
+    // validate/reset other form data
+    // sex
+    if (this.inputs["ismale"].checked) {
+      formData['ismale'] = 1 ;
+    } else this.formData['ismale'] = 0;
+    // Clinical ASCVD
+    if (this.inputs["clinASCVD"][0].checked) {
+      this.formData['clinASCVD'] = 1;
+    }
+    else {
+      this.formData['clinASCVD'] = 0;
+      // Remove 'uncontrolled_ASCVD' if ASCVD is removed
+      if (this.formData['uncontrolled_ASCVD'] == 1) {
+          this.removeRiskFactor('uncontrolled_ASCVD');
+          this.formData['uncontrolled_ASCVD'] == 0;
+      }
+    }
+    // percent LDL-C reduction
+    if (0.0 <= this.inputs['percentLDLCreduction'][0].value && this.inputs['percentLDLCreduction'][0].value <= 100.0) {
+      this.formData['percentLDLCreduction'] = this.inputs['percentLDLCreduction'][0].value / 100.0;
+    } else {
+      this.inputs["percentLDLCreduction"][0].value = 100*formData['percentLDLCreduction'][0];
+      this.inputs["percentLDLCreduction"][1].innerHTML = '0 &le; % LDL-C Reduction &le; 100';
+      setTimeout(function(){
+        this.inputs["percentLDLCreduction"][1].innerHTML = '';
+      }, 3000);
+    }
+    // age
+    if (30 <= this.inputs['age'][0].value && this.inputs['age'][0].value <= 120) { 
+      this.formData['age'] = this.inputs['age'][0].value;
+    } else {
+      this.inputs['age'][0].value = formData['age'];
+      this.inputs['age'][1].innerHTML = '30 &le; Age &le; 120';
+      setTimeout(function(){
+        this.inputs['age'][1].innerHTML = '';
+      }, 3000);
+    }
+    // LDLC
+    if (60 <= this.inputs['LDLC'][0].value && this.inputs['LDLC'][0].value <= 400) {
+      this.formData['LDLC'] = this.inputs['LDLC'][0].value;
+    } else {
+      this.inputs['LDLC'][0].value = this.formData['LDLC'];
+      this.inputs['LDLC'][1].innerHTML = '60 &le; LDL-C &le; 400';
+      setTimeout(function(){
+        this.inputs['LDLC'][1].innerHTML = '';
+      }, 3000);
+    }
+    // sysBP here (if in use)
+    /*
+    if (90 <= this.inputs['sysBP'][0].value && this.inputs['sysBP'][0].value <= 350) { 
+        this.formData['sysBP'] = this.inputs['sysBP'][0].value;
+    } else {
+        form.sysBP.value = formData['sysBP'];
+        this.inputs['sysBP'][1].innerHTML = '90 &le; LDL-C &le; 350';
+        setTimeout(function(){
+            this.inputs['sysBP'][1].innerHTML = '';
+        }, 3000);
+    }
+    */
+    
+    // calculate
+    var output = {'NNT':0,'risk':0,'risklevel':"Unknown"}; //getOutput(this.formData);
+    
+    // display output
+    this.showResults(this.r,output);  
+  }
   
+  // simulate form submission
+  this.onformsubmission();
   
-  
+  // set listeners
+  var _this = this;
+  for (key in this.inputs) {
+    //console.log(_this.inputs[key][0]);
+    _this.inputs[key][0].addEventListener("change", function(){_this.onformsubmission()});
+  }
 }
