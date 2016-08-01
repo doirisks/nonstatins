@@ -3,9 +3,7 @@
   * by Ted Morin
   * 
   * contains a function to turn a div into a the NNT calculator for nonstatins paper
-  * expects:
-  * 1) div id will be passed as argument
-  * 2) function will be stored in variable with the SAME NAME as div id
+  * expects div id passed as an argument
   **/
   
   // TODO add support for older IE in dynamic build of Sex input
@@ -15,9 +13,20 @@
 function NNTcalculator(div_id) {
   
   // "global" variables
-  this.inputs = {};  // inputs to check 
-  this.formData = {'ismale' : 0, 'clinASCVD': 0, 'metabSyndrome': 0,'diabetic': 0,'antihyp': 0,'coronHeartDis': 0,'CVC': 0,'arterDisease': 0,'histStroke': 0,'ACShist': 0,'CKD': 0};
-  this.formDataKeys = ['clinASCVD', 'diabetic','recentACS','uncontrolled_ASCVD','fam_hypercholesterolemia']; // keys that should start at value of zero
+  this.inputs = {};     // inputs to check 
+  this.formData = {
+    'ismale' : 0, 
+    'clinASCVD': 0, 
+    'metabSyndrome': 0,
+    'diabetic': 0,
+    'antihyp': 0,
+    'coronHeartDis': 0,
+    'CVC': 0,
+    'arterDisease': 0,
+    'histStroke': 0,
+    'ACShist': 0,
+    'CKD': 0
+  };
   this.riskfactorKeys = [];       // keys for selected risk factors
   this.riskfactorTableRows = [];  // risk factor table rows
   this.selectorKeys = [ // useable keys
@@ -36,6 +45,44 @@ function NNTcalculator(div_id) {
       'fam_hypercholesterolemia': 'Familial Hypercholesterolemia',
       'CKD' : 'Chronic Kidney Disease'
   }; 
+  
+  
+  // function NNTdata: calculates the NNT and risk info for the calculator
+  // expects a hash table with all risk factors
+  this.NNTdata = function (data) {
+    var leastrisk = 1.0;
+    /**
+     * finds the least risk and return output calculated from it
+     *
+     * i.e. the lower bound of risk for the patient's WORST risk category
+     **/
+    // ASCVD
+    if (data['clinASCVD']){
+      if ((data['diabetic']) || (data['recentACS']) || (data['uncontrolled_ASCVD']) || (data['CKD']) || (data['LDLC'] >= 190) || (data['fam_hypercholesterolemia'])) {
+        leastrisk = 0.15; // with comorbidities
+        return this.NNTcalculation(leastrisk, data['LDLC'], data['percentLDLCreduction']);
+      } else {
+        leastrisk = 0.10; // without comorbidities
+        return this.NNTcalculation(leastrisk, data['LDLC'], data['percentLDLCreduction']);
+      }
+    } else if ((data['fam_hypercholesterolemia']) || (data['LDLC'] >= 190)) {
+      leastrisk = 0.10; // certain comorbidities alone
+      return this.NNTcalculation(leastrisk, data['LDLC'], data['percentLDLCreduction']);
+    } else {
+      leastrisk = 0.05;
+      return this.NNTcalculation(leastrisk, data['LDLC'], data['percentLDLCreduction']);
+    }
+  }
+  
+  // function NNTcalculation: performs the specific calculation for NNT within NNTdata
+  this.NNTcalculation = function (riskval, LDLC, percentLDLCreduction) {   
+    var NNT = 1.0 /(riskval*0.21*LDLC/38.61*percentLDLCreduction) ;
+    NNT = Math.round(NNT);
+    var risklevel = "MODERATE";
+    if(riskval >= 0.1 ) risklevel = "HIGH";
+    if(riskval >= 0.15) risklevel = "VERY HIGH";
+    return {'NNT':NNT,'risk':riskval,'risklevel':risklevel};
+  }
   
   // function makeSelector: makes the risk factor selector
   this.makeSelector = function(table) {
@@ -74,6 +121,11 @@ function NNTcalculator(div_id) {
       var remove = this.makeElem("input");
       remove.setAttribute("type", "button");
       remove.setAttribute("value", "Remove");
+      /*var _this = this;
+      remove.addEventListener("onclick", function() {
+        _this.removeRiskFactor(_this.riskfactorKeys[i]);
+        _this.onformsubmission();  
+      });*/
       remove.setAttribute("onclick", this.id+'.rfremovalbuttonclicked("' + this.riskfactorKeys[i] + '")');
       // removal button's cell
       var remove_cell = this.makeElem("td");
@@ -268,19 +320,6 @@ function NNTcalculator(div_id) {
     this.d.appendChild(this.disclaimer[i]);
   } 
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   // function rfremovalbuttonclicked: the function called when an rf removal button is clicked
   this.rfremovalbuttonclicked = function (useable_key){
     this.removeRiskFactor(useable_key);
@@ -326,7 +365,6 @@ function NNTcalculator(div_id) {
 
   // onformsubmission runs all necessary actions for when the form is submitted
   this.onformsubmission = function() {
-  console.log(this);
   
     // check for new risk factors
     for (var i in this.selectorKeys) {
@@ -409,7 +447,8 @@ function NNTcalculator(div_id) {
     */
     
     // calculate
-    var output = {'NNT':0,'risk':0,'risklevel':"Unknown"}; //getOutput(this.formData);
+    //{'NNT':0,'risk':0,'risklevel':"Unknown"};
+    var output = this.NNTdata(this.formData);
     
     // display output
     this.showResults(this.r,output);  
@@ -421,7 +460,6 @@ function NNTcalculator(div_id) {
   // set listeners
   var _this = this;
   for (key in this.inputs) {
-    //console.log(_this.inputs[key][0]);
     _this.inputs[key][0].addEventListener("change", function(){_this.onformsubmission()});
   }
 }
