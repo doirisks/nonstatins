@@ -245,7 +245,9 @@ function NNTcalculator(div_id) {
   
   // building the calculator...
   this.id = div_id;
-  this.d = document.getElementById(this.id);
+  this.shell = document.getElementById(this.id);
+  this.d = this.makeElem("div");
+  this.shell.appendChild(this.d);
   this.d.setAttribute("style", "width:380px;text-align:center;border-style:double;padding-bottom:0px");
   
   // build "title"
