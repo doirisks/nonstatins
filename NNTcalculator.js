@@ -118,16 +118,13 @@ function NNTcalculator(div_id) {
     table.innerHTML = "";
     for (var i in this.riskfactorKeys) {
       // removal button
-      var remove = this.makeElem("input");
-      remove.setAttribute("type", "button");
-      remove.setAttribute("value", "Remove");
-      /*var _this = this;
-      remove.addEventListener("onclick", function() {
+      var remove = this.makeElem("button");
+      remove.appendChild(document.createTextNode("Remove"));
+      var _this = this;
+      remove.addEventListener("click", function() {
         _this.removeRiskFactor(_this.riskfactorKeys[i]);
         _this.onformsubmission();  
-      });*/
-      remove.setAttribute("onclick", this.id+'.rfremovalbuttonclicked("' + this.riskfactorKeys[i] + '")');
-      // removal button's cell
+      });
       var remove_cell = this.makeElem("td");
       remove_cell.setAttribute("style", "font-size:15;text-align:right;padding-right:10px;width:115px");
       remove_cell.appendChild(remove);
@@ -319,12 +316,6 @@ function NNTcalculator(div_id) {
   for (var i in this.disclaimer) {
     this.d.appendChild(this.disclaimer[i]);
   } 
-  
-  // function rfremovalbuttonclicked: the function called when an rf removal button is clicked
-  this.rfremovalbuttonclicked = function (useable_key){
-    this.removeRiskFactor(useable_key);
-    this.onformsubmission();
-  }
 
   // function addRiskFactor: adds a risk factor to the list shown, remove from the selector list
   this.addRiskFactor = function (useable_key) {
