@@ -9,6 +9,7 @@
   **/
   
   // TODO add support for older IE in dynamic build of Sex input
+  // TODO change the 5 and 10 year risk displays to show "greater than or equal to" ( >= ) instead of ">"
 
 function NNTcalculator(div_id) {
   
@@ -77,7 +78,44 @@ function NNTcalculator(div_id) {
     master.inputs.push(input);
     table.appendChild(tr);
   }
-
+  
+  // function to display results as passed by the make calculator function
+  this.showResults = function (master, div, results) {
+    // make elements
+    var table = master.makeElem("table");
+    var titlerow = master.makeElem("tr");
+    var outptrow = master.makeElem("tr");
+    var cells = [];
+    for (i in [0, 1, 2, 3]){
+      cells.push(master.makeElem("td"));
+      cells[i].setAttribute("style", "text-align:center;width:190px;");
+    }
+    cells[0].appendChild(document.createTextNode("5Y Risk of ASCVD"));
+    titlerow.appendChild(cells[0]);
+    cells[1].appendChild(document.createTextNode("10Y Risk of ASCVD"));
+    titlerow.appendChild(cells[1]);
+    table.appendChild(titlerow);
+    cells[2].appendChild(document.createTextNode("> " + (Math.floor(results["risk"]*1000.0)/10.0).toString()+'%'));
+    outptrow.appendChild(cells[2]);
+    cells[3].appendChild(document.createTextNode("> " + (Math.floor(2 * results["risk"]*1000.0)/10.0).toString()+'%'));
+    outptrow.appendChild(cells[3]);
+    table.appendChild(outptrow);
+    
+    var risklevel = master.makeElem("p");
+    risklevel.appendChild(document.createTextNode("Risk Level: "+ results["risklevel"]));
+    
+    var NNT = master.makeElem("p");
+    NNT.setAttribute("style", "font-size:24");
+    NNT.appendChild(document.createTextNode("Five Year NNT: " + results["NNT"].toString()));
+    
+    // clear and insert
+    div.innerHTML = "";
+    div.appendChild(table);
+    div.appendChild(risklevel);
+    div.appendChild(NNT);
+    div.appendChild(master.makeElem("hr"));
+  }
+  
   // building the calculator...
   this.id = div_id;
   this.d = document.getElementById(this.id);
@@ -110,27 +148,37 @@ function NNTcalculator(div_id) {
   }
   
   // buidl "risk factors"
-  this.rf = this.makeElem("table");
-  this.d.appendChild(this.rf);
+  this.rf = [];
+  this.rf.push(this.makeElem("table"));
+  this.rf.push(this.makeElem("table"));
+  this.rf.push(this.makeElem("hr"));
+  for (i in this.rf) {
+    this.d.appendChild(this.rf[i]);
+  }
   
   // build "percent ldl-c reduction"
   this.ldl = [];
+  this.ldl.push(this.makeElem("p"));          // title
+  this.ldl.push(this.makeElem("input"));      // input
+  this.ldl.push(this.makeElem("span"));       // validation
+  this.ldl[0].setAttribute("style","text-align:center");
+  this.ldl[0].appendChild(document.createTextNode("Percent LDL-C Reduction"));
+  this.ldl[1].setAttribute("style","width:45px;text-align:center");
+  this.ldl[1].setAttribute("type", "float");
+  this.ldl[1].setAttribute("name", "percentLDLCreduction");
+  this.ldl[1].setAttribute("value", 20);
+  this.ldl[2].setAttribute("style", "color:FF0000");
   this.ldl.push(this.makeElem("hr"));
   for (i in this.ldl) {
     this.d.appendChild(this.ldl[i]);
   }
+  this.inputs.push(this.ldl[1]);
   
   
-  // build results
-  this.r = [];
-  this.r.push(this.makeElem("table")); // 5Y and 10Y Risks
-  this.r.push(this.makeElem("p"));     // Risk Level
-  this.r.push(this.makeElem("p"));     // Five Year NNT
-  this.ldl.push(this.makeElem("hr"));  // separator
-  
-  for (i in this.r) {
-    this.d.appendChild(this.r[i]);
-  }
+  // build "results"
+  this.r = this.makeElem("div");
+  this.showResults(this, this.r,{'NNT':0,'risk':0,'risklevel':"Unknown"});
+  this.d.appendChild(this.r);
   
   // build disclaimer
   this.disclaimer = [];
@@ -139,6 +187,5 @@ function NNTcalculator(div_id) {
   this.disclaimer[0].appendChild(document.createTextNode("Estimates reflect broad risk categories and may not respond to all value changes"));
   for (i in this.disclaimer) {
     this.d.appendChild(this.disclaimer[i]);
-  }
-  
+  } 
 }
