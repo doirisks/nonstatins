@@ -37,8 +37,8 @@ function NNTcalculator(div_id) {
     'histStroke': 0,
     'ACShist': 0,
     'CKD': 0,
-    //'multEvents' : 0,
-    //'elevLipo' : 0,
+    'multEvents' : 0,
+    'elevLipo' : 0,
     'fam_hypercholesterolemia': 0
   };
   this.riskfactorKeys = [];       // keys for selected risk factors
@@ -49,8 +49,8 @@ function NNTcalculator(div_id) {
       'recentACS',
       'uncontrolled_ASCVD',
       'fam_hypercholesterolemia',
-      //'multEvents',
-      //'elevLipo',
+      'multEvents',
+      'elevLipo',
       'CKD'
   ]; 
   this.selectorNames = { // maps useable keys to names
@@ -59,8 +59,8 @@ function NNTcalculator(div_id) {
       'recentACS' : 'Recent ACS (<3 months)',
       'uncontrolled_ASCVD': 'Poorly Controlled ASCVD Risk Factors',
       'fam_hypercholesterolemia': 'Familial Hypercholesterolemia',
-      //'multEvents' : 'Multiple Recurrent Events',
-      //'elevLipo' : 'Elevated Lipoprotein',
+      'multEvents' : 'Multiple Recurrent Events',
+      'elevLipo' : 'Elevated Lipoprotein',
       'CKD' : 'Chronic Kidney Disease'
   }; 
   
@@ -82,8 +82,8 @@ function NNTcalculator(div_id) {
           (data['uncontrolled_ASCVD']) || 
           (data['CKD']) || (data['LDLC'] >= 190) || 
           (data['fam_hypercholesterolemia']) ||
-          //(data['multEvents']) ||
-          //(data['elevLipo'])
+          (data['multEvents']) ||
+          (data['elevLipo'])
         ) {
         leastrisk = 0.15; 
       } else {// without comorbidities
@@ -419,7 +419,7 @@ function NNTcalculator(div_id) {
           // does nothing if the form is not being used
         } else if (   // riskfactors implying ASCVD
             (useable == 'uncontrolled_ASCVD') || 
-            //(useable == 'multEvents') ||
+            (useable == 'multEvents') ||
             (useable == 'recentACS')
           ) {    
           this.formData[useable] = 1;
@@ -457,10 +457,10 @@ function NNTcalculator(div_id) {
         this.formData['uncontrolled_ASCVD'] == 0;
       }
       // Remove 'multEvents' if ASCVD is removed
-      //if (this.formData['multEvents'] == 1) {
-      //  this.removeRiskFactor('multEvents');
-      //  this.formData['multEvents'] == 0;
-      //}
+      if (this.formData['multEvents'] == 1) {
+        this.removeRiskFactor('multEvents');
+        this.formData['multEvents'] == 0;
+      }
     }
     // percent LDL-C reduction
     if (0.0 <= this.inputs['percentLDLCreduction'][0].value && this.inputs['percentLDLCreduction'][0].value <= 100.0) {
