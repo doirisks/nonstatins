@@ -334,7 +334,7 @@ function NNTcalculator(div_id) {
     this.selector = this.makeSelector(this.rf[1]);
   }
 
-  //function to remove a risk factor from the list
+  // function removeRiskFactor: removes a risk factor from the list
   this.removeRiskFactor = function(useable_key) {
     if (useable_key == '') {
       // put option back in
@@ -365,10 +365,10 @@ function NNTcalculator(div_id) {
         useable = this.selectorKeys[i];
         if (useable == 'notadding') {
           // does nothing if the form is not being used
-        } else if (useable == 'uncontrolled_ASCVD') {    // riskfactors implying ASCVD
-          this.formData['uncontrolled_ASCVD'] = 1;
+        } else if ((useable == 'uncontrolled_ASCVD') || (useable == 'recentACS')) {    // riskfactors implying ASCVD
+          this.formData[useable] = 1;
           this.inputs["clinASCVD"][0].checked = true;
-          this.addRiskFactor('uncontrolled_ASCVD');
+          this.addRiskFactor(useable);
         } else {                                // usually just sets the formData value to 1 and adds the risk value
           this.formData[this.selectorKeys[i]] = 1;
           this.addRiskFactor(this.selectorKeys[i]);
@@ -390,10 +390,15 @@ function NNTcalculator(div_id) {
     }
     else {
       this.formData['clinASCVD'] = 0;
-      // Remove 'uncontrolled_ASCVD' if ASCVD is removed
+      console.log(this.formData);
+      // Remove 'uncontrolled_ASCVD' and 'recentACS' if ASCVD is removed
+      if (this.formData['recentACS'] == 1) {
+        this.removeRiskFactor('recentACS');
+        this.formData['recentACS'] == 0;
+      }
       if (this.formData['uncontrolled_ASCVD'] == 1) {
-          this.removeRiskFactor('uncontrolled_ASCVD');
-          this.formData['uncontrolled_ASCVD'] == 0;
+        this.removeRiskFactor('uncontrolled_ASCVD');
+        this.formData['uncontrolled_ASCVD'] == 0;
       }
     }
     // percent LDL-C reduction
