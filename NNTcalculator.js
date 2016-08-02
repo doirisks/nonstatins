@@ -343,7 +343,7 @@ function NNTcalculator(div_id) {
   this.ldl = [];
   this.ldl.push(this.makeElem("p"));          // title
   this.ldl.push(this.makeElem("input"));      // input
-  this.ldl.push(this.makeElem("span"));       // validation
+  this.ldl.push(this.makeElem("p"));          // validation
   this.ldl[0].setAttribute("style","text-align:center");
   this.ldl[0].appendChild(document.createTextNode("Percent LDL-C Reduction"));
   this.ldl[1].setAttribute("style","width:45px;text-align:center");
@@ -356,7 +356,6 @@ function NNTcalculator(div_id) {
     this.d.appendChild(this.ldl[i]);
   }
   this.inputs["percentLDLCreduction"] = [this.ldl[1], this.ldl[2]];
-  
   
   // build "results"
   this.r = this.makeElem("div");
@@ -469,20 +468,22 @@ function NNTcalculator(div_id) {
     if (0.0 <= this.inputs['percentLDLCreduction'][0].value && this.inputs['percentLDLCreduction'][0].value <= 100.0) {
       this.formData['percentLDLCreduction'] = this.inputs['percentLDLCreduction'][0].value / 100.0;
     } else {
-      this.inputs["percentLDLCreduction"][0].value = 100*formData['percentLDLCreduction'][0];
+      this.inputs["percentLDLCreduction"][0].value = 100*this.formData['percentLDLCreduction'];
       this.inputs["percentLDLCreduction"][1].innerHTML = '0 &le; % LDL-C Reduction &le; 100';
+      var _this = this;
       setTimeout(function(){
-        this.inputs["percentLDLCreduction"][1].innerHTML = '';
+        _this.inputs["percentLDLCreduction"][1].innerHTML = '';
       }, 3000);
     }
     // age
     if (30 <= this.inputs['age'][0].value && this.inputs['age'][0].value <= 120) { 
       this.formData['age'] = this.inputs['age'][0].value;
     } else {
-      this.inputs['age'][0].value = formData['age'];
+      this.inputs['age'][0].value = this.formData['age'];
       this.inputs['age'][1].innerHTML = '30 &le; Age &le; 120';
+      var _this = this;
       setTimeout(function(){
-        this.inputs['age'][1].innerHTML = '';
+        _this.inputs['age'][1].innerHTML = '';
       }, 3000);
     }
     // LDLC
@@ -491,20 +492,22 @@ function NNTcalculator(div_id) {
     } else {
       this.inputs['LDLC'][0].value = this.formData['LDLC'];
       this.inputs['LDLC'][1].innerHTML = '60 &le; LDL-C &le; 400';
+      var _this = this;
       setTimeout(function(){
-        this.inputs['LDLC'][1].innerHTML = '';
+        _this.inputs['LDLC'][1].innerHTML = '';
       }, 3000);
     }
     // sysBP here (if in use)
     /*
     if (90 <= this.inputs['sysBP'][0].value && this.inputs['sysBP'][0].value <= 350) { 
-        this.formData['sysBP'] = this.inputs['sysBP'][0].value;
+      this.formData['sysBP'] = this.inputs['sysBP'][0].value;
     } else {
-        form.sysBP.value = formData['sysBP'];
-        this.inputs['sysBP'][1].innerHTML = '90 &le; LDL-C &le; 350';
-        setTimeout(function(){
-            this.inputs['sysBP'][1].innerHTML = '';
-        }, 3000);
+      form.sysBP.value = this.formData['sysBP'];
+      this.inputs['sysBP'][1].innerHTML = '90 &le; LDL-C &le; 350';
+      var _this = this;
+      setTimeout(function(){
+        _this.inputs['sysBP'][1].innerHTML = '';
+      }, 3000);
     }
     */
     
