@@ -4,6 +4,17 @@
   * 
   * contains a function to turn a div into a the NNT calculator for nonstatins paper
   * expects div id passed as an argument
+  *
+  * to add support for a new risk factor, make appropriate edits in:
+  * formData
+  * selectorKeys
+  * selectorNames
+  * NNTdata (function)
+  * 
+  * if the new risk factor implies ASCVD, also edit onformsubmission near comments:
+  * "riskfactors implying ASCVD"
+  * "Remove impossible risk factors"
+  * 
   **/
   
   // TODO add support for older IE in dynamic build of Sex input
@@ -434,7 +445,7 @@ function NNTcalculator(div_id) {
       this.formData['clinASCVD'] = 1;
     }
     else {
-      this.formData['clinASCVD'] = 0;
+      this.formData['clinASCVD'] = 0; // Remove impossible risk factors
       // Remove 'recentACS' if ASCVD is removed
       if (this.formData['recentACS'] == 1) {
         this.removeRiskFactor('recentACS');
