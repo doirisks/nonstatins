@@ -14,7 +14,7 @@ function NNTcalculator(div_id) {
   
   // "global" variables
   this.inputs = {};     // inputs to check 
-  this.formData = {
+  this.formData = {  // initial values
     'ismale' : 0, 
     'clinASCVD': 0, 
     'metabSyndrome': 0,
@@ -25,7 +25,8 @@ function NNTcalculator(div_id) {
     'arterDisease': 0,
     'histStroke': 0,
     'ACShist': 0,
-    'CKD': 0
+    'CKD': 0,
+    'fam_hypercholesterolemia': 0
   };
   this.riskfactorKeys = [];       // keys for selected risk factors
   this.riskfactorTableRows = [];  // risk factor table rows
@@ -58,20 +59,25 @@ function NNTcalculator(div_id) {
      **/
     // ASCVD
     if (data['clinASCVD']){
-      if ((data['diabetic']) || (data['recentACS']) || (data['uncontrolled_ASCVD']) || (data['CKD']) || (data['LDLC'] >= 190) || (data['fam_hypercholesterolemia'])) {
-        leastrisk = 0.15; // with comorbidities
-        return this.NNTcalculation(leastrisk, data['LDLC'], data['percentLDLCreduction']);
-      } else {
-        leastrisk = 0.10; // without comorbidities
-        return this.NNTcalculation(leastrisk, data['LDLC'], data['percentLDLCreduction']);
+      if (  // with comorbidities
+          (data['diabetic']) || 
+          (data['recentACS']) || 
+          (data['uncontrolled_ASCVD']) || 
+          (data['CKD']) || (data['LDLC'] >= 190) || 
+          (data['fam_hypercholesterolemia'])
+        ) {
+        leastrisk = 0.15; 
+      } else {// without comorbidities
+        leastrisk = 0.10; 
       }
     } else if ((data['fam_hypercholesterolemia']) || (data['LDLC'] >= 190)) {
       leastrisk = 0.10; // certain comorbidities alone
-      return this.NNTcalculation(leastrisk, data['LDLC'], data['percentLDLCreduction']);
-    } else {
+    } else if (false == true) {
       leastrisk = 0.05;
-      return this.NNTcalculation(leastrisk, data['LDLC'], data['percentLDLCreduction']);
+    } else {
+      return {'NNT': 0,'risk': 0 ,'risklevel': "UNKNOWN" };  
     }
+    return this.NNTcalculation(leastrisk, data['LDLC'], data['percentLDLCreduction']);
   }
   
   // function NNTcalculation: performs the specific calculation for NNT within NNTdata
@@ -208,39 +214,66 @@ function NNTcalculator(div_id) {
   
   // function to display results as passed by the make calculator function
   this.showResults = function (div, results) {
-    // make elements
-    var table = this.makeElem("table");
-    var titlerow = this.makeElem("tr");
-    var outptrow = this.makeElem("tr");
-    var cells = [];
-    for (var i in [0, 1, 2, 3]){
-      cells.push(this.makeElem("td"));
-      cells[i].setAttribute("style", "text-align:center;width:190px;");
+    if (results['risklevel'] == "UNKNOWN") {
+      // apologize
+      var apology = [];
+      apology.push(this.makeElem("p"));
+      apology[0].setAttribute("style", "font-size:18");
+      apology[0].appendChild(document.createTextNode("Estimate is not available for this patient group."));
+      if ( // by special request
+          (this.formData["clinASCVD"] == 0) &&
+          (this.formData["fam_hypercholesterolemia"] == 0) &&
+          (this.formData["LDLC"] < 190)
+        ) 
+      {
+        apology.push(this.makeElem("p"));
+        apology[1].setAttribute("style", "font-size:16");
+        apology[1].appendChild(document.createTextNode("Awaiting estimates of primary prevention risk on statins."));
+      }
+        
+      
+      // clear and insert
+      div.innerHTML = "";
+      for (i in apology) {
+        div.appendChild(apology[i]);
+      }
+      div.appendChild(this.makeElem("hr"));
     }
-    cells[0].appendChild(document.createTextNode("5Y Risk of ASCVD"));
-    titlerow.appendChild(cells[0]);
-    cells[1].appendChild(document.createTextNode("10Y Risk of ASCVD"));
-    titlerow.appendChild(cells[1]);
-    table.appendChild(titlerow);
-    cells[2].appendChild(document.createTextNode("> " + (Math.floor(results["risk"]*1000.0)/10.0).toString()+'%'));
-    outptrow.appendChild(cells[2]);
-    cells[3].appendChild(document.createTextNode("> " + (Math.floor(2 * results["risk"]*1000.0)/10.0).toString()+'%'));
-    outptrow.appendChild(cells[3]);
-    table.appendChild(outptrow);
-    
-    var risklevel = this.makeElem("p");
-    risklevel.appendChild(document.createTextNode("Risk Level: "+ results["risklevel"]));
-    
-    var NNT = this.makeElem("p");
-    NNT.setAttribute("style", "font-size:24");
-    NNT.appendChild(document.createTextNode("Five Year NNT: " + results["NNT"].toString()));
-    
-    // clear and insert
-    div.innerHTML = "";
-    div.appendChild(table);
-    div.appendChild(risklevel);
-    div.appendChild(NNT);
-    div.appendChild(this.makeElem("hr"));
+    else {  // good proper result was returned
+      // make elements
+      var table = this.makeElem("table");
+      var titlerow = this.makeElem("tr");
+      var outptrow = this.makeElem("tr");
+      var cells = [];
+      for (var i in [0, 1, 2, 3]){
+        cells.push(this.makeElem("td"));
+        cells[i].setAttribute("style", "text-align:center;width:190px;");
+      }
+      cells[0].appendChild(document.createTextNode("5Y Risk of ASCVD"));
+      titlerow.appendChild(cells[0]);
+      cells[1].appendChild(document.createTextNode("10Y Risk of ASCVD"));
+      titlerow.appendChild(cells[1]);
+      table.appendChild(titlerow);
+      cells[2].appendChild(document.createTextNode("> " + (Math.floor(results["risk"]*1000.0)/10.0).toString()+'%'));
+      outptrow.appendChild(cells[2]);
+      cells[3].appendChild(document.createTextNode("> " + (Math.floor(2 * results["risk"]*1000.0)/10.0).toString()+'%'));
+      outptrow.appendChild(cells[3]);
+      table.appendChild(outptrow);
+      
+      var risklevel = this.makeElem("p");
+      risklevel.appendChild(document.createTextNode("Risk Level: "+ results["risklevel"]));
+      
+      var NNT = this.makeElem("p");
+      NNT.setAttribute("style", "font-size:24");
+      NNT.appendChild(document.createTextNode("Five Year NNT: " + results["NNT"].toString()));
+      
+      // clear and insert
+      div.innerHTML = "";
+      div.appendChild(table);
+      div.appendChild(risklevel);
+      div.appendChild(NNT);
+      div.appendChild(this.makeElem("hr"));
+    }
   }
   
   // building the calculator...
@@ -390,7 +423,6 @@ function NNTcalculator(div_id) {
     }
     else {
       this.formData['clinASCVD'] = 0;
-      console.log(this.formData);
       // Remove 'uncontrolled_ASCVD' and 'recentACS' if ASCVD is removed
       if (this.formData['recentACS'] == 1) {
         this.removeRiskFactor('recentACS');
