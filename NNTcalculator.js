@@ -60,7 +60,7 @@ function NNTcalculator(div_id) {
       'uncontrolled_ASCVD': 'Poorly Controlled ASCVD Risk Factors',
       'fam_hypercholesterolemia': 'Familial Hypercholesterolemia',
       'multEvents' : 'Multiple Recurrent Events',
-      'elevLipo' : 'Elevated Lipoprotein',
+      'elevLipo' : 'Elevated Lipoprotein (a)',
       'CKD' : 'Chronic Kidney Disease'
   }; 
   
