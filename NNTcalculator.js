@@ -26,6 +26,8 @@ function NNTcalculator(div_id) {
     'histStroke': 0,
     'ACShist': 0,
     'CKD': 0,
+    //'multEvents' : 0,
+    //'elevLipo' : 0,
     'fam_hypercholesterolemia': 0
   };
   this.riskfactorKeys = [];       // keys for selected risk factors
@@ -36,6 +38,8 @@ function NNTcalculator(div_id) {
       'recentACS',
       'uncontrolled_ASCVD',
       'fam_hypercholesterolemia',
+      //'multEvents',
+      //'elevLipo',
       'CKD'
   ]; 
   this.selectorNames = { // maps useable keys to names
@@ -44,6 +48,8 @@ function NNTcalculator(div_id) {
       'recentACS' : 'Recent ACS (<3 months)',
       'uncontrolled_ASCVD': 'Poorly Controlled ASCVD Risk Factors',
       'fam_hypercholesterolemia': 'Familial Hypercholesterolemia',
+      //'multEvents' : 'Multiple Recurrent Events',
+      //'elevLipo' : 'Elevated Lipoprotein',
       'CKD' : 'Chronic Kidney Disease'
   }; 
   
@@ -64,7 +70,9 @@ function NNTcalculator(div_id) {
           (data['recentACS']) || 
           (data['uncontrolled_ASCVD']) || 
           (data['CKD']) || (data['LDLC'] >= 190) || 
-          (data['fam_hypercholesterolemia'])
+          (data['fam_hypercholesterolemia']) ||
+          //(data['multEvents']) ||
+          //(data['elevLipo'])
         ) {
         leastrisk = 0.15; 
       } else {// without comorbidities
@@ -398,7 +406,11 @@ function NNTcalculator(div_id) {
         useable = this.selectorKeys[i];
         if (useable == 'notadding') {
           // does nothing if the form is not being used
-        } else if ((useable == 'uncontrolled_ASCVD') || (useable == 'recentACS')) {    // riskfactors implying ASCVD
+        } else if (   // riskfactors implying ASCVD
+            (useable == 'uncontrolled_ASCVD') || 
+            //(useable == 'multEvents') ||
+            (useable == 'recentACS')
+          ) {    
           this.formData[useable] = 1;
           this.inputs["clinASCVD"][0].checked = true;
           this.addRiskFactor(useable);
@@ -423,15 +435,21 @@ function NNTcalculator(div_id) {
     }
     else {
       this.formData['clinASCVD'] = 0;
-      // Remove 'uncontrolled_ASCVD' and 'recentACS' if ASCVD is removed
+      // Remove 'recentACS' if ASCVD is removed
       if (this.formData['recentACS'] == 1) {
         this.removeRiskFactor('recentACS');
         this.formData['recentACS'] == 0;
       }
+      // Remove 'uncontrolled_ASCVD' if ASCVD is removed
       if (this.formData['uncontrolled_ASCVD'] == 1) {
         this.removeRiskFactor('uncontrolled_ASCVD');
         this.formData['uncontrolled_ASCVD'] == 0;
       }
+      // Remove 'multEvents' if ASCVD is removed
+      //if (this.formData['multEvents'] == 1) {
+      //  this.removeRiskFactor('multEvents');
+      //  this.formData['multEvents'] == 0;
+      //}
     }
     // percent LDL-C reduction
     if (0.0 <= this.inputs['percentLDLCreduction'][0].value && this.inputs['percentLDLCreduction'][0].value <= 100.0) {
