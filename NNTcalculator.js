@@ -122,7 +122,7 @@ function NNTcalculator(div_id) {
     selector.addEventListener("change", function(){_this.onformsubmission()});
     
     var label = this.makeElem("td");
-    label.setAttribute("style","font-size:15;text-align:right;padding-right:10px;width:115px");
+    label.setAttribute("style","font-size:15px;text-align:right;padding-right:10px;width:115px");
     label.appendChild(document.createTextNode("Add Risk Factor:"));
     var selector_cell = this.makeElem("td");
     selector_cell.setAttribute("style", "text-align:center;width:250px");
@@ -152,7 +152,7 @@ function NNTcalculator(div_id) {
         _this.onformsubmission();  
       });
       var remove_cell = this.makeElem("td");
-      remove_cell.setAttribute("style", "font-size:15;text-align:right;padding-right:10px;width:115px");
+      remove_cell.setAttribute("style", "font-size:15px;text-align:right;padding-right:10px;width:115px");
       remove_cell.appendChild(remove);
       // display risk factor name
       var display_cell = this.makeElem("td");
@@ -182,7 +182,7 @@ function NNTcalculator(div_id) {
     var tr = this.makeElem("tr");
     var titlecell = this.makeElem("td");  // title of the input
     titlecell.appendChild(document.createTextNode(title + ":"));
-    titlecell.setAttribute("style","font-size:15;text-align:right;padding-right:10px;width:115px");
+    titlecell.setAttribute("style","font-size:15px;text-align:right;padding-right:10px;width:115px");
     tr.appendChild(titlecell);
     var cell = this.makeElem("td");
     var input = this.makeElem("input")
@@ -219,7 +219,7 @@ function NNTcalculator(div_id) {
       cell.appendChild(input);
       tr.appendChild(cell);
       var validation_cell = this.makeElem("td");
-      validation_cell.setAttribute("style","text-align:center;width:120px;color:#FF0000;font-size:12");
+      validation_cell.setAttribute("style","text-align:center;width:120px;color:#FF0000;font-size:12px");
       var validation = this.makeElem("span");
       validation_cell.appendChild(validation);
       tr.appendChild(validation_cell);
@@ -238,7 +238,7 @@ function NNTcalculator(div_id) {
       // apologize
       var apology = [];
       apology.push(this.makeElem("p"));
-      apology[0].setAttribute("style", "font-size:18");
+      apology[0].setAttribute("style", "font-size:18px");
       apology[0].appendChild(document.createTextNode("Estimate is not supported for this patient group."));
       if ( // by special request
           (this.formData["clinASCVD"] == 0) &&
@@ -247,7 +247,7 @@ function NNTcalculator(div_id) {
         ) 
       {
         apology.push(this.makeElem("p"));
-        apology[1].setAttribute("style", "font-size:16");
+        apology[1].setAttribute("style", "font-size:16px");
         apology[1].appendChild(document.createTextNode("Awaiting estimates of primary prevention risk on statins."));
       }
         
@@ -284,7 +284,7 @@ function NNTcalculator(div_id) {
       risklevel.appendChild(document.createTextNode("Risk Level: "+ results["risklevel"]));
       
       var NNT = this.makeElem("p");
-      NNT.setAttribute("style", "font-size:24");
+      NNT.setAttribute("style", "font-size:24px");
       NNT.appendChild(document.createTextNode("Five Year NNT: " + results["NNT"].toString()));
       
       // clear and insert
@@ -308,9 +308,9 @@ function NNTcalculator(div_id) {
   this.title.push(this.makeElem('p'));  // title
   this.title.push(this.makeElem("p"));  // subtitle
   this.title.push(this.makeElem("hr")); // separator
-  this.title[0].setAttribute("style","font-size:30");
+  this.title[0].setAttribute("style","font-size:30px");
   this.title[0].appendChild(document.createTextNode("NNT Estimator"));
-  this.title[1].setAttribute("style","font-size:16;text-align:center;padding-left:40px;padding-right:40px");
+  this.title[1].setAttribute("style","font-size:16px;text-align:center;padding-left:40px;padding-right:40px");
   this.title[1].appendChild(document.createTextNode("Number Needed to Treat for LDL-C reducers while on maximal statin therapy"));
   for (var i in this.title) {
     this.d.appendChild(this.title[i]);
@@ -365,7 +365,7 @@ function NNTcalculator(div_id) {
   // build disclaimer
   this.disclaimer = [];
   this.disclaimer.push(this.makeElem("p"));
-  this.disclaimer[0].setAttribute("style", "color:#990000;font-size:12;padding-left:35px;padding-right:35px");
+  this.disclaimer[0].setAttribute("style", "color:#990000;font-size:12px;padding-left:35px;padding-right:35px");
   this.disclaimer[0].appendChild(document.createTextNode("Estimates reflect broad risk categories and may not respond to all value changes"));
   for (var i in this.disclaimer) {
     this.d.appendChild(this.disclaimer[i]);
