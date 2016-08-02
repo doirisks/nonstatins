@@ -145,9 +145,10 @@ function NNTcalculator(div_id) {
       // removal button
       var remove = this.makeElem("button");
       remove.appendChild(document.createTextNode("Remove"));
+      remove["name"] = this.riskfactorKeys[i];
       var _this = this;
       remove.addEventListener("click", function() {
-        _this.removeRiskFactor(_this.riskfactorKeys[i]);
+        _this.removeRiskFactor(this["name"]);
         _this.onformsubmission();  
       });
       var remove_cell = this.makeElem("td");
@@ -253,7 +254,7 @@ function NNTcalculator(div_id) {
       
       // clear and insert
       div.innerHTML = "";
-      for (i in apology) {
+      for (var i in apology) {
         div.appendChild(apology[i]);
       }
       div.appendChild(this.makeElem("hr"));
@@ -394,13 +395,15 @@ function NNTcalculator(div_id) {
       // pass?
     } else {
       // take option out of riskfactorKeys
-      for(var i = this.riskfactorKeys.length -1; i >= 0 ; i--){
-        if(this.riskfactorKeys[i] == useable_key){
-            this.riskfactorKeys.splice(i, 1);
-            // put the key back into selector keys
+      var newlist = [];
+      for (var i in this.riskfactorKeys) {
+        if (this.riskfactorKeys[i] == useable_key){
           this.selectorKeys.push(useable_key);
+        } else {
+          newlist.push(this.riskfactorKeys[i]);
         }
       }
+      this.riskfactorKeys = newlist;
       //remake both html elements
       this.makeRFlist(this.rf[0]);
       this.selector = this.makeSelector(this.rf[1]);
