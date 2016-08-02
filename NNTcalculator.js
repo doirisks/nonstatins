@@ -239,7 +239,7 @@ function NNTcalculator(div_id) {
       var apology = [];
       apology.push(this.makeElem("p"));
       apology[0].setAttribute("style", "font-size:18");
-      apology[0].appendChild(document.createTextNode("Estimate is not available for this patient group."));
+      apology[0].appendChild(document.createTextNode("Estimate is not supported for this patient group."));
       if ( // by special request
           (this.formData["clinASCVD"] == 0) &&
           (this.formData["fam_hypercholesterolemia"] == 0) &&
