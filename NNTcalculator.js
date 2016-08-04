@@ -428,6 +428,7 @@ function NNTcalculator(div_id) {
   this.d = this.makeElem("div", {
     "width":"380px",
     "text-align":"center",
+    "border-color":"black",
     "border-style":"double",
     "padding-bottom":"0px"
   });
