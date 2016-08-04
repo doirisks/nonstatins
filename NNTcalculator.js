@@ -99,7 +99,6 @@ function NNTcalculator(div_id) {
       "border-color": "inherit"
     },
     "td" : {
-      "margin": "0px 0px 0px 0px",
       "display": "table-cell",
       "vertical-align": "inherit"
     },
@@ -301,7 +300,7 @@ function NNTcalculator(div_id) {
     titlecell.appendChild(document.createTextNode(title + ":"));
     
     tr.appendChild(titlecell);
-    var input = this.makeElem("input",null)
+    var input = this.makeElem("input",null);
     input.setAttribute("type",inptype);
     input.setAttribute("name",inpname);
     // radio inputs (Sex)
@@ -316,24 +315,29 @@ function NNTcalculator(div_id) {
       input2.setAttribute("type",inptype);
       input2.setAttribute("name",inpname);
       var cell = this.makeElem("td",{
-        "text-align":"right",
-        "width":"145px"
+        "text-align":"center",
+        "width":"180px"
       });
       cell.appendChild(input);
-      cell.appendChild(document.createTextNode(upper));
+      cell.appendChild(document.createTextNode(" " + upper + " "));
       cell.appendChild(input2);
-      cell.appendChild(document.createTextNode(lower));
+      cell.appendChild(document.createTextNode(" " +lower));
       tr.appendChild(cell);
+      tr.appendChild(this.makeElem('td',{ // empty filler cell
+        "width": "50px"
+      }));
     // checkbox inputs (ClinASCVD)
     } else if (inptype == "checkbox") {
       input.setAttribute("checked",true);
       var cell = this.makeElem("td",{
         "text-align":"center",
-        "width":"120px",
-        "padding-left":"30px"
+        "width":"180px",
       });
       cell.appendChild(input);
       tr.appendChild(cell);
+      tr.appendChild(this.makeElem('td',{ // empty filler cell
+        "width": "50px"
+      }));
     // number inputs (Age, LDL-C)
     } else if (inptype == "float") {
       input.setAttribute("value",defaultval);
