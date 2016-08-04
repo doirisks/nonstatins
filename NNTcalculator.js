@@ -65,12 +65,12 @@ function NNTcalculator(div_id) {
   }; 
   this.default_styles = { // essentially the css file of this javascript
     "div" : {
-      "margin": "0em 0em 0em 0em",
+      "margin": '"0px 0px 0px 0px"',
       "font-family":'"Times New Roman", Times, serif',
       "display":"block",
     },
     "table" : {
-      "margin": '"0em 0em 0em 0em"',
+      "margin": '"0px 0px 0px 0px"',
       "white-space": "normal",
       "line-height": "normal",
       "font-weight": "normal",
@@ -93,18 +93,18 @@ function NNTcalculator(div_id) {
       "border-left-color": "grey"
     },
     "tr" : {
-      "margin": "0em 0em 0em 0em",
+      "margin": '"0px 0px 0px 0px"',
       "display": "table-row",
       "vertical-align": "inherit",
       "border-color": "inherit"
     },
     "td" : {
-      "margin": "0em 0em 0em 0em",
+      "margin": '"0px 0px 0px 0px"',
       "display": "table-cell",
       "vertical-align": "inherit"
     },
     "p" : {
-      "margin": "0em 0em 0em 0em",
+      "margin": '"0px 0px 0px 0px"',
       "font-family":'"Times New Roman", Times, serif',
       "display": "block",
       "-webkit-margin-before": "1em",
@@ -138,7 +138,7 @@ function NNTcalculator(div_id) {
       "text-shadow": "none",
       "display": "inline-block",
       "text-align": "start",
-      "margin": "0em 0em 0em 0em",
+      "margin": '"0px 0px 0px 0px"',
       "font": "13.3333px Arial;\n!important"
     },
     "option": {
