@@ -449,8 +449,8 @@ function NNTcalculator(div_id) {
   this.title.push(this.makeElem("p", {
     "font-size":"16px",
     "text-align":"center",
-    "padding-left":"10px",
-    "padding-right":"10px"
+    "padding-left":"8px",
+    "padding-right":"8px"
   }));  // subtitle
   this.title.push(this.makeElem("hr", null)); // separator
   this.title[0].appendChild(document.createTextNode("NNT Estimator"));
