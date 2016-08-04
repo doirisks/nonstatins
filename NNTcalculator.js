@@ -433,7 +433,7 @@ function NNTcalculator(div_id) {
     "width":"380px",
     "text-align":"center",
     "border-color":"black",
-    "border-thickness":"3px",
+    "border-width":"3px",
     "border-style":"double",
     "padding-bottom":"0px"
   });
