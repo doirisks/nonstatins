@@ -449,12 +449,12 @@ function NNTcalculator(div_id) {
   this.title.push(this.makeElem("p", {
     "font-size":"16px",
     "text-align":"center",
-    "padding-left":"40px",
-    "padding-right":"40px"
+    "padding-left":"10px",
+    "padding-right":"10px"
   }));  // subtitle
   this.title.push(this.makeElem("hr", null)); // separator
   this.title[0].appendChild(document.createTextNode("NNT Estimator"));
-  this.title[1].appendChild(document.createTextNode("Number Needed to Treat for LDL-C reducers while on maximal statin therapy"));
+  this.title[1].appendChild(document.createTextNode("Number Needed to Treat per Percent LDL-C Reduction in Statin-Treated Patients"));
   for (var i in this.title) {
     this.d.appendChild(this.title[i]);
   }
