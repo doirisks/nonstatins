@@ -148,7 +148,8 @@ function NNTcalculator(div_id) {
       "padding": "0px 2px 1px",
     },
     "button": {
-      "padding": "1px 6px"
+      "padding": "1px 6px",
+      "font": "13.3333px Arial"
     }
   }
   
