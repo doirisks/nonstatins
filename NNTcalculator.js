@@ -65,6 +65,7 @@ function NNTcalculator(div_id) {
   }; 
   this.default_styles = { // essentially the css file of this javascript
     "div" : {
+      "font-family":'"Times New Roman", Times, serif',
       "display":"block",
     },
     "table" : {
