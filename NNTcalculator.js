@@ -65,10 +65,12 @@ function NNTcalculator(div_id) {
   }; 
   this.default_styles = { // essentially the css file of this javascript
     "div" : {
+      "margin-bottom":"0px",
       "font-family":'"Times New Roman", Times, serif',
       "display":"block",
     },
     "table" : {
+      "margin-bottom":"0px",
       "white-space": "normal",
       "line-height": "normal",
       "font-weight": "normal",
@@ -91,15 +93,18 @@ function NNTcalculator(div_id) {
       "border-left-color": "grey"
     },
     "tr" : {
+      "margin-bottom":"0px",
       "display": "table-row",
       "vertical-align": "inherit",
       "border-color": "inherit"
     },
     "td" : {
+      "margin-bottom":"0px",
       "display": "table-cell",
       "vertical-align": "inherit"
     },
     "p" : {
+      "margin-bottom":"0px",
       "font-family":'"Times New Roman", Times, serif',
       "display": "block",
       "-webkit-margin-before": "1em",
