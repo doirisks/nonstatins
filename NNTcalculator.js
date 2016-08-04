@@ -146,6 +146,9 @@ function NNTcalculator(div_id) {
       "white-space": "pre",
       "min-height": "1.2em",
       "padding": "0px 2px 1px",
+    },
+    "button": {
+      "padding": "1px 6px"
     }
   }
   
