@@ -70,7 +70,7 @@ function NNTcalculator(div_id) {
       "display":"block",
     },
     "table" : {
-      "margin": "0em 0em 0em 0em",
+      "margin": '"0em 0em 0em 0em"',
       "white-space": "normal",
       "line-height": "normal",
       "font-weight": "normal",
