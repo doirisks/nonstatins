@@ -63,6 +63,85 @@ function NNTcalculator(div_id) {
       'elevLipo' : 'Elevated Lipoprotein (a)',
       'CKD' : 'Chronic Kidney Disease'
   }; 
+  this.default_styles = { // essentially the css file of this javascript
+    "div" : {
+      "display":"block",
+    },
+    "table" : {
+      "white-space": "normal",
+      "line-height": "normal",
+      "font-weight": "normal",
+      "font-size": "medium",
+      "font-style": "normal",
+      "color": "-internal-quirk-inherit",
+      "text-align": "start",
+      "font-variant": "normal",
+      "font-variant-ligatures": "normal",
+      "font-variant-caps": "normal",
+      "display": "table",
+      "border-collapse": "separate",
+      "border-spacing": "2px",
+      "-webkit-border-horizontal-spacing": "2px",
+      "-webkit-border-vertical-spacing": "2px",
+      "border-color": "grey",
+      "border-top-color": "grey",
+      "border-right-color": "grey",
+      "border-bottom-color": "grey",
+      "border-left-color": "grey"
+    },
+    "tr" : {
+      "display": "table-row",
+      "vertical-align": "inherit",
+      "border-color": "inherit"
+    },
+    "td" : {
+      "display": "table-cell",
+      "vertical-align": "inherit"
+    },
+    "p" : {
+      "display": "block",
+      "-webkit-margin-before": "1em",
+      "-webkit-margin-after": "1em",
+      "-webkit-margin-start": "0px",
+      "-webkit-margin-end": "0px"
+    },
+    "select": {
+      "-webkit-appearance": "menulist",
+      "box-sizing": "border-box",
+      "align-items": "center",
+      "border-image-source": "initial",
+      "border-image-slice": "initial",
+      "border-image-width": "initial",
+      "border-image-outset": "initial",
+      "border-image-repeat": "initial",
+      "white-space": "pre",
+      "-webkit-rtl-ordering": "logical",
+      "color": "black",
+      //"background-color": "white",
+      "cursor": "default",
+      "border-width": "1px",
+      "border-style": "solid",
+      //"border-color": "initial",
+      
+      "text-rendering": "auto",
+      "letter-spacing": "normal",
+      "word-spacing": "normal",
+      "text-transform": "none",
+      "text-indent": "0px",
+      "text-shadow": "none",
+      "display": "inline-block",
+      "text-align": "start",
+      "margin": "0em 0em 0em 0em",
+      "font": "13.3333px Arial;\n!important"
+    },
+    "option": {
+      "font-weight": "normal",
+      "display": "block",
+      "white-space": "pre",
+      "min-height": "1.2em",
+      "padding": "0px 2px 1px",
+    }
+  }
   
   
   // function NNTdata: calculates the NNT and risk info for the calculator
@@ -111,9 +190,9 @@ function NNTcalculator(div_id) {
   
   // function makeSelector: makes the risk factor selector
   this.makeSelector = function(table) {
-    var selector = this.makeElem("select");
+    var selector = this.makeElem("select", null);
     for (var i in this.selectorKeys) {
-      var opt = this.makeElem("option");
+      var opt = this.makeElem("option", null);
       opt.setAttribute("name",this.selectorKeys[i]);
       opt.appendChild(document.createTextNode(this.selectorNames[this.selectorKeys[i]]));
       selector.appendChild(opt);
@@ -121,13 +200,16 @@ function NNTcalculator(div_id) {
     var _this = this;
     selector.addEventListener("change", function(){_this.onformsubmission()});
     
-    var label = this.makeElem("td");
-    label.setAttribute("style","font-size:15px;text-align:right;padding-right:10px;width:115px");
+    var label = this.makeElem("td",{
+      "font-size":"15px",
+      "text-align":"right",
+      "padding-right":"10px",
+      "width":"115px"
+    });
     label.appendChild(document.createTextNode("Add Risk Factor:"));
-    var selector_cell = this.makeElem("td");
-    selector_cell.setAttribute("style", "text-align:center;width:250px");
+    var selector_cell = this.makeElem("td",{"text-align":"center","width":"250px"});
     selector_cell.appendChild(selector);
-    var tr = this.makeElem("tr");
+    var tr = this.makeElem("tr", null);
     tr.appendChild(label);
     tr.appendChild(selector_cell);
     var nodes = table.childNodes;
@@ -143,7 +225,7 @@ function NNTcalculator(div_id) {
     table.innerHTML = "";
     for (var i in this.riskfactorKeys) {
       // removal button
-      var remove = this.makeElem("button");
+      var remove = this.makeElem("button", null);
       remove.appendChild(document.createTextNode("Remove"));
       remove["name"] = this.riskfactorKeys[i];
       var _this = this;
@@ -151,12 +233,18 @@ function NNTcalculator(div_id) {
         _this.removeRiskFactor(this["name"]);
         _this.onformsubmission();  
       });
-      var remove_cell = this.makeElem("td");
-      remove_cell.setAttribute("style", "font-size:15px;text-align:right;padding-right:10px;width:115px");
+      var remove_cell = this.makeElem("td",{
+        "font-size":"15px",
+        "text-align":"right",
+        "padding-right":"10px",
+        "width":"115px"
+      });
       remove_cell.appendChild(remove);
       // display risk factor name
-      var display_cell = this.makeElem("td");
-      display_cell.setAttribute("style", "text-align:center;width:250px");
+      var display_cell = this.makeElem("td", {
+        "text-align":"center",
+        "width":"250px"
+      });
       var rfname = this.selectorNames[this.riskfactorKeys[i]];
       display_cell.appendChild(document.createTextNode(rfname));
       // table row for the cells
@@ -169,10 +257,28 @@ function NNTcalculator(div_id) {
   }
   
   
-  // function makeElem: returns document.createElement(), but adds class NNTcalculator to the tag name
-  this.makeElem = function (tagname) {
+  // function makeElem: returns document.createElement(), but adds class and styles
+  this.makeElem = function (tagname, styles) {
     var newElem = document.createElement(tagname)
     newElem.setAttribute("class", "NNTcalculator");
+    var default_styles = this.default_styles[newElem.tagName.toLowerCase()];
+    if (styles == null) {
+      var styles = default_styles;
+    }
+    else {
+      for (style in default_styles) {
+        if (styles[style] == null) {
+          styles[style] = this.default_styles[style];
+        }
+      }
+    }
+    // write style string
+    var stylestring = "";
+    for (style in styles) {
+      stylestring += style + ":" + styles[style] + ";";
+    }
+    console.log(newElem.tagName, stylestring);
+    newElem.setAttribute("style", stylestring);
     return newElem;
   }
   
@@ -180,12 +286,16 @@ function NNTcalculator(div_id) {
   this.makeInput = function(table, title, inpname, inptype, lower, upper, defaultval) {
   
     var tr = this.makeElem("tr");
-    var titlecell = this.makeElem("td");  // title of the input
+    var titlecell = this.makeElem("td", {
+      "font-size":"15px",
+      "text-align":"right",
+      "padding-right":"10px",
+      "width":"115px"
+    });  // title of the input
     titlecell.appendChild(document.createTextNode(title + ":"));
-    titlecell.setAttribute("style","font-size:15px;text-align:right;padding-right:10px;width:115px");
+    
     tr.appendChild(titlecell);
-    var cell = this.makeElem("td");
-    var input = this.makeElem("input")
+    var input = this.makeElem("input",null)
     input.setAttribute("type",inptype);
     input.setAttribute("name",inpname);
     // radio inputs (Sex)
@@ -199,7 +309,10 @@ function NNTcalculator(div_id) {
       var input2 = this.makeElem("input");
       input2.setAttribute("type",inptype);
       input2.setAttribute("name",inpname);
-      cell.setAttribute("style","text-align:right;width:145px");
+      var cell = this.makeElem("td",{
+        "text-align":"right",
+        "width":"145px"
+      });
       cell.appendChild(input);
       cell.appendChild(document.createTextNode(upper));
       cell.appendChild(input2);
@@ -208,18 +321,29 @@ function NNTcalculator(div_id) {
     // checkbox inputs (ClinASCVD)
     } else if (inptype == "checkbox") {
       input.setAttribute("checked",true);
-      cell.setAttribute("style","text-align:center;width:120px;padding-left:30px");
+      var cell = this.makeElem("td",{
+        "text-align":"center",
+        "width":"120px",
+        "padding-left":"30px"
+      });
       cell.appendChild(input);
       tr.appendChild(cell);
     // number inputs (Age, LDL-C)
     } else if (inptype == "float") {
       input.setAttribute("value",defaultval);
       input.setAttribute("style","width:45px;text-align:center");
-      cell.setAttribute("style", "text-align:right;width:110px");
+      var cell = this.makeElem("td",{
+        "text-align":"right",
+        "width":"110px"
+      });
       cell.appendChild(input);
       tr.appendChild(cell);
-      var validation_cell = this.makeElem("td");
-      validation_cell.setAttribute("style","text-align:center;width:120px;color:#FF0000;font-size:12px");
+      var validation_cell = this.makeElem("td", {
+        "text-align":"center",
+        "width":"120px",
+        "color":"#FF0000",
+        "font-size":"12px"
+      });
       var validation = this.makeElem("span");
       validation_cell.appendChild(validation);
       tr.appendChild(validation_cell);
@@ -237,8 +361,7 @@ function NNTcalculator(div_id) {
     if (results['risklevel'] == "UNKNOWN") {
       // apologize
       var apology = [];
-      apology.push(this.makeElem("p"));
-      apology[0].setAttribute("style", "font-size:18px");
+      apology.push(this.makeElem("p",{"font-size":"18px"}));
       apology[0].appendChild(document.createTextNode("Estimate is not supported for this patient group."));
       if ( // by special request
           (this.formData["clinASCVD"] == 0) &&
@@ -246,8 +369,7 @@ function NNTcalculator(div_id) {
           (this.formData["LDLC"] < 190)
         ) 
       {
-        apology.push(this.makeElem("p"));
-        apology[1].setAttribute("style", "font-size:16px");
+        apology.push(this.makeElem("p", {"font-size":"16px"}));
         apology[1].appendChild(document.createTextNode("Awaiting estimates of primary prevention risk on statins."));
       }
         
@@ -257,17 +379,16 @@ function NNTcalculator(div_id) {
       for (var i in apology) {
         div.appendChild(apology[i]);
       }
-      div.appendChild(this.makeElem("hr"));
+      div.appendChild(this.makeElem("hr", null));
     }
     else {  // good proper result was returned
       // make elements
-      var table = this.makeElem("table");
-      var titlerow = this.makeElem("tr");
-      var outptrow = this.makeElem("tr");
+      var table = this.makeElem("table", null);
+      var titlerow = this.makeElem("tr", null);
+      var outptrow = this.makeElem("tr", null);
       var cells = [];
       for (var i in [0, 1, 2, 3]){
-        cells.push(this.makeElem("td"));
-        cells[i].setAttribute("style", "text-align:center;width:190px;");
+        cells.push(this.makeElem("td", {"text-align":"center","width":"190px"}));
       }
       cells[0].appendChild(document.createTextNode("5Y Risk of ASCVD"));
       titlerow.appendChild(cells[0]);
@@ -280,11 +401,10 @@ function NNTcalculator(div_id) {
       outptrow.appendChild(cells[3]);
       table.appendChild(outptrow);
       
-      var risklevel = this.makeElem("p");
+      var risklevel = this.makeElem("p", null);
       risklevel.appendChild(document.createTextNode("Risk Level: "+ results["risklevel"]));
       
-      var NNT = this.makeElem("p");
-      NNT.setAttribute("style", "font-size:24px");
+      var NNT = this.makeElem("p", {"font-size":"24px"});
       NNT.appendChild(document.createTextNode("Five Year NNT: " + results["NNT"].toString()));
       
       // clear and insert
@@ -292,25 +412,32 @@ function NNTcalculator(div_id) {
       div.appendChild(table);
       div.appendChild(risklevel);
       div.appendChild(NNT);
-      div.appendChild(this.makeElem("hr"));
+      div.appendChild(this.makeElem("hr",null));
     }
   }
   
   // building the calculator...
   this.id = div_id;
   this.shell = document.getElementById(this.id);
-  this.d = this.makeElem("div");
+  this.d = this.makeElem("div", {
+    "width":"380px",
+    "text-align":"center",
+    "border-style":"double",
+    "padding-bottom":"0px"
+  });
   this.shell.appendChild(this.d);
-  this.d.setAttribute("style", "width:380px;text-align:center;border-style:double;padding-bottom:0px");
   
   // build "title"
   this.title = [];
-  this.title.push(this.makeElem('p'));  // title
-  this.title.push(this.makeElem("p"));  // subtitle
-  this.title.push(this.makeElem("hr")); // separator
-  this.title[0].setAttribute("style","font-size:30px");
+  this.title.push(this.makeElem('p', {"font-size":"30px"}));  // title
+  this.title.push(this.makeElem("p", {
+    "font-size":"16px",
+    "text-align":"center",
+    "padding-left":"40px",
+    "padding-right":"40px"
+  }));  // subtitle
+  this.title.push(this.makeElem("hr", null)); // separator
   this.title[0].appendChild(document.createTextNode("NNT Estimator"));
-  this.title[1].setAttribute("style","font-size:16px;text-align:center;padding-left:40px;padding-right:40px");
   this.title[1].appendChild(document.createTextNode("Number Needed to Treat for LDL-C reducers while on maximal statin therapy"));
   for (var i in this.title) {
     this.d.appendChild(this.title[i]);
@@ -318,8 +445,8 @@ function NNTcalculator(div_id) {
   
   // build table of static risk factor inputs
   this.t = [];
-  this.t.push(this.makeElem("table"));
-  this.t.push(this.makeElem("table"));  // repeat is not an accident
+  this.t.push(this.makeElem("table", null));
+  this.t.push(this.makeElem("table", null));  // repeat is not an accident
   this.makeInput(this.t[0], "Sex", "ismale", "radio", "Female", "Male");
   this.makeInput(this.t[0], "Clinical ASCVD", "clinASCVD", "checkbox");
   this.makeInput(this.t[1], "Age", "age", "float", 30, 120, 60);
@@ -331,8 +458,8 @@ function NNTcalculator(div_id) {
   
   // build "risk factors"
   this.rf = [];
-  this.rf.push(this.makeElem("table"));
-  this.rf.push(this.makeElem("table"));
+  this.rf.push(this.makeElem("table", null));
+  this.rf.push(this.makeElem("table", null));
   this.selector = this.makeSelector(this.rf[1]);
   this.rf.push(this.makeElem("hr"));
   for (var i in this.rf) {
@@ -341,17 +468,14 @@ function NNTcalculator(div_id) {
   
   // build "percent ldl-c reduction"
   this.ldl = [];
-  this.ldl.push(this.makeElem("p"));          // title
-  this.ldl.push(this.makeElem("input"));      // input
-  this.ldl.push(this.makeElem("p"));          // validation
-  this.ldl[0].setAttribute("style","text-align:center");
+  this.ldl.push(this.makeElem("p", {"text-align":"center"}));          // title
+  this.ldl.push(this.makeElem("input", {"width":"45px","text-align":"center"}));      // input
+  this.ldl.push(this.makeElem("p", {"color":"FF0000"}));          // validation
   this.ldl[0].appendChild(document.createTextNode("Percent LDL-C Reduction"));
-  this.ldl[1].setAttribute("style","width:45px;text-align:center");
   this.ldl[1].setAttribute("type", "float");
   this.ldl[1].setAttribute("name", "percentLDLCreduction");
   this.ldl[1].setAttribute("value", 20);
-  this.ldl[2].setAttribute("style", "color:FF0000");
-  this.ldl.push(this.makeElem("hr"));
+  this.ldl.push(this.makeElem("hr", null));
   for (var i in this.ldl) {
     this.d.appendChild(this.ldl[i]);
   }
@@ -364,8 +488,12 @@ function NNTcalculator(div_id) {
   
   // build disclaimer
   this.disclaimer = [];
-  this.disclaimer.push(this.makeElem("p"));
-  this.disclaimer[0].setAttribute("style", "color:#990000;font-size:12px;padding-left:35px;padding-right:35px");
+  this.disclaimer.push(this.makeElem("p", {
+    "color":"#990000",
+    "font-size":"12px",
+    "padding-left":"35px",
+    "padding-right":"35px"
+  }));
   this.disclaimer[0].appendChild(document.createTextNode("Estimates reflect broad risk categories and may not respond to all value changes"));
   for (var i in this.disclaimer) {
     this.d.appendChild(this.disclaimer[i]);
