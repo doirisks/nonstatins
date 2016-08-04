@@ -99,6 +99,7 @@ function NNTcalculator(div_id) {
       "vertical-align": "inherit"
     },
     "p" : {
+      "font-family":'"Times New Roman", Times, serif',
       "display": "block",
       "-webkit-margin-before": "1em",
       "-webkit-margin-after": "1em",
@@ -277,7 +278,6 @@ function NNTcalculator(div_id) {
     for (style in styles) {
       stylestring += style + ":" + styles[style] + ";";
     }
-    console.log(newElem.tagName, stylestring);
     newElem.setAttribute("style", stylestring);
     return newElem;
   }
