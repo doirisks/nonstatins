@@ -28,17 +28,16 @@ function NNTcalculator(div_id) {
   this.formData = {  // initial values
     'ismale' : 0, 
     'clinASCVD': 0, 
-    'metabSyndrome': 0,
     'diabetic': 0,
-    'antihyp': 0,
+    'metabSyndrome': 0,
+    'recentACS': 0,
+    'recurrentACS' : 0,
+    'resisthyp': 0,
+    'smoker': 0,
     'coronHeartDis': 0,
-    'CVC': 0,
     'arterDisease': 0,
-    'histStroke': 0,
-    'ACShist': 0,
-    'CKD': 0,
-    'multEvents' : 0,
     'elevLipo' : 0,
+    'CKD': 0,
     'fam_hypercholesterolemia': 0
   };
   this.riskfactorKeys = [];       // keys for selected risk factors
@@ -46,22 +45,30 @@ function NNTcalculator(div_id) {
   this.selectorKeys = [ // useable keys
       'notadding', 
       'diabetic',
+      'metabSyndrome',
       'recentACS',
-      'uncontrolled_ASCVD',
-      'fam_hypercholesterolemia',
-      'multEvents',
+      'recurrentACS',
+      'resisthyp',
+      'smoker',
+      'coronHeartDis',
+      'arterDisease',
       'elevLipo',
-      'CKD'
+      'CKD', 
+      'fam_hypercholesterolemia'
   ]; 
   this.selectorNames = { // maps useable keys to names
       'notadding':'---',
       'diabetic':'Diabetes',
+      'metabSyndrome' : 'Metabolic Syndrome',
       'recentACS' : 'Recent ACS (<3 months)',
-      'uncontrolled_ASCVD': 'Poorly Controlled ASCVD Risk Factors',
-      'fam_hypercholesterolemia': 'Familial Hypercholesterolemia',
-      'multEvents' : 'Multiple Recurrent Events',
+      'recurrentACS' : 'Recurrent ACS',
+      'resisthyp': 'Resistant Hypertension',
+      'smoker' : 'Current Smoker',
+      'coronHeartDis' : 'Coronary Heart Disease',
+      'arterDisease' : 'Arterial Disease',
       'elevLipo' : 'Elevated Lipoprotein (a)',
-      'CKD' : 'Chronic Kidney Disease'
+      'CKD' : 'Chronic Kidney Disease',
+      'fam_hypercholesterolemia': 'Familial Hypercholesterolemia'
   }; 
   this.default_styles = { // essentially the css file of this javascript
     "div" : {
@@ -163,27 +170,43 @@ function NNTcalculator(div_id) {
      *
      * i.e. the lower bound of risk for the patient's WORST risk category
      **/
-    // ASCVD
-    if (data['clinASCVD']){
-      if (  // with comorbidities
-          (data['diabetic']) || 
-          (data['recentACS']) || 
-          (data['uncontrolled_ASCVD']) || 
-          (data['CKD']) || (data['LDLC'] >= 190) || 
-          (data['fam_hypercholesterolemia']) ||
-          (data['multEvents']) ||
-          (data['elevLipo'])
-        ) {
-        leastrisk = 0.15; 
-      } else {// without comorbidities
-        leastrisk = 0.10; 
+    // finds the least risk and return output calculated from it
+    if ( data['clinASCVD'] ) {
+      if ( data['fam_hypercholesterolemia'] ) {
+        leastrisk = 0.205;
+      } else if (data['CKD']) {
+        leastrisk = 0.17;
+      } else if (data['recentACS']) {
+        leastrisk = 0.16;
+      } else if ( data['elevLipo'] || data['recurrentACS']) {
+        leastrisk = 0.15;
+      } else if (data['arterDisease'] || data['coronHeartDis']) {
+        leastrisk = 0.15;
+      } else if (data['smoker']) {
+        leastrisk = 0.14;
+      } else if (data['resisthyp']) {
+        leastrisk = 0.14;
+      } else if (data['diabetic']) {
+        leastrisk = 0.13;
+      } else if ( !(data['CKD']) ) {
+        leastrisk = 0.11;
       }
-    } else if ((data['fam_hypercholesterolemia']) || (data['LDLC'] >= 190)) {
-      leastrisk = 0.10; // certain comorbidities alone
-    } else if (false == true) {
-      leastrisk = 0.05;
+    } else if ( data['fam_hypercholesterolemia'] || (data['LDLC'] >= 190)) {
+      leastrisk = 0.10;
+    /** none of the lines would ever be used because they would all rely on ASCVD, and ASCVD is accounted for
+    } else if (!(data['ismale']) && data['histStroke']) {
+      leastrisk = 0.10;
+    } else if (data['age'] > 65.0 || ) {
+      leastrisk = 0.10;
+    } else if (data['clinASCVD']) {
+      leastrisk = 0.10;
+    } else if () {
+      leastrisk = 0.08;
+    **/
+    } else if (data['metabSyndrome']) {
+      leastrisk = 0.075;
     } else {
-      return {'NNT': 0,'risk': 0 ,'risklevel': "UNKNOWN" };  
+      return {'NNT': 0,'risk': 0 ,'risklevel': "UNKNOWN" };
     }
     return this.NNTcalculation(leastrisk, data['LDLC'], data['percentLDLCreduction']);
   }
