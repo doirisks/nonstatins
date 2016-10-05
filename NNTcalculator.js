@@ -191,7 +191,11 @@ function NNTcalculator(div_id) {
       } else if ( !(data['CKD']) ) {
         leastrisk = 0.11;
       }
-    } else if ( data['fam_hypercholesterolemia'] || (data['LDLC'] >= 190)) {
+    } else if ( 
+      (data['fam_hypercholesterolemia'] || (data['LDLC'] >= 190)) && 
+      (40 <= data['age']) && 
+      ( data['age'] <= 80)
+    ) {
       leastrisk = 0.10;
     /** none of the lines would ever be used because they would all rely on ASCVD, and ASCVD is accounted for
     } else if (!(data['ismale']) && data['histStroke']) {
@@ -587,9 +591,9 @@ function NNTcalculator(div_id) {
         if (useable == 'notadding') {
           // does nothing if the form is not being used
         } else if (   // riskfactors implying ASCVD
-            (useable == 'uncontrolled_ASCVD') || 
-            (useable == 'multEvents') ||
-            (useable == 'recentACS')
+            (useable == 'recentACS') || 
+            (useable == 'recurrentACS') ||
+            (useable == 'multEvents')
           ) {    
           this.formData[useable] = 1;
           this.inputs["clinASCVD"][0].checked = true;
@@ -620,15 +624,15 @@ function NNTcalculator(div_id) {
         this.removeRiskFactor('recentACS');
         this.formData['recentACS'] == 0;
       }
-      // Remove 'uncontrolled_ASCVD' if ASCVD is removed
-      if (this.formData['uncontrolled_ASCVD'] == 1) {
-        this.removeRiskFactor('uncontrolled_ASCVD');
-        this.formData['uncontrolled_ASCVD'] == 0;
+      // Remove 'recurrentACS' if ASCVD is removed
+      if (this.formData['recurrentACS'] == 1) {
+        this.removeRiskFactor('recurrentACS');
+        this.formData['recurrentACS'] == 0;
       }
-      // Remove 'multEvents' if ASCVD is removed
-      if (this.formData['multEvents'] == 1) {
-        this.removeRiskFactor('multEvents');
-        this.formData['multEvents'] == 0;
+      // Remove 'coronHeartDis' if ASCVD is removed
+      if (this.formData['coronHeartDis'] == 1) {
+        this.removeRiskFactor('coronHeartDis');
+        this.formData['coronHeartDis'] == 0;
       }
     }
     // percent LDL-C reduction
